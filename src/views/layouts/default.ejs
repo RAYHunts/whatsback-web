@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= typeof title !== 'undefined' ? `${title} | Whatsback Web` : "Whatsback Web" %></title>
+    <%- include('../components/main/head') %>
+  </head>
+
+  <body class="bg-gray-100 dark:bg-gray-900 min-h-screen">
+    <div class="container mx-auto max-w-4xl px-4 py-8">
+      <%- include('../components/main/header') %> 
+      <%- include('../components/qrcode') %> 
+      <%- include('../components/session') %> 
+      <%- body %>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 flex flex-col space-y-2 z-50"></div>
+    
+    <%- include('../components/tailwind-indicator') %> 
+    <%- include('../components/main/footer') %>
+  </body>
+</html>

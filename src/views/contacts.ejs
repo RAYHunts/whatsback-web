@@ -1,0 +1,24 @@
+<div
+  class="flex flex-col space-y-4 bg-white dark:bg-gray-800 p-2 rounded-md shadow-md"
+>
+  <div class="flex justify-between items-center">
+    <h1 class="text-lg font-bold mb-4 text-black dark:text-white">Contacts</h1>
+    <h1 class="text-lg font-bold mb-4 text-black dark:text-white font-mono">Total Contacts: <%= totalContacts %></h1>
+  </div>
+  <input
+    type="text"
+    id="searchContact"
+    class="border p-2 rounded w-full mb-2"
+    placeholder="Search contact"
+  />
+
+  <div
+    id="contactContainer"
+    class="max-h-60 overflow-y-auto border p-2 rounded bg-white"
+  >
+    <ul id="contactList" class="space-y-2"></ul>
+    <p id="loadingText" class="text-gray-500 text-center hidden">Loading...</p>
+  </div>
+</div>
+
+<script src="/js/contact.js"></script>

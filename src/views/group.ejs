@@ -1,0 +1,70 @@
+<div
+  class="flex flex-col space-y-4 bg-white dark:bg-gray-800 p-2 rounded-md shadow-md"
+>
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold mb-4 text-black dark:text-white">
+      Send Group Message
+    </h1>
+    <button
+      onclick="openGroupModal()"
+      class="bg-blue-500 text-white px-4 py-2 rounded"
+    >
+      Select Group [<span class="font-mono"><%= totalGroups %></span>]
+    </button>
+  </div>
+  <input
+    type="text"
+    id="number"
+    class="border p-2 rounded"
+    placeholder="Enter group id"
+    required
+  />
+  <div id="editor-container" class="w-full p-4 bg-white shadow rounded"></div>
+  <button
+    onclick="sendGroupMessage()"
+    class="bg-green-500 text-white px-4 py-2 rounded"
+  >
+    Send
+  </button>
+</div>
+
+<!-- Group Selection Modal -->
+<div
+  id="groupModal"
+  class="hidden fixed inset-0 items-center justify-center bg-gray-900 backdrop-blur-md bg-opacity-50"
+>
+  <div
+    class="bg-white p-6 rounded shadow-lg w-1/1 sm:w-1/1 md:w-1/1 lg:w-1/2 mx-auto"
+  >
+    <h2 class="text-xl font-bold mb-4">
+      Select Group [<span class="font-mono"><%= totalGroups %></span>]
+    </h2>
+    <!-- Removed inline oninput attribute -->
+    <input
+      type="text"
+      id="searchGroup"
+      class="border p-2 rounded w-full mb-2"
+      placeholder="Search group"
+    />
+
+    <div
+      id="groupContainer"
+      class="max-h-60 overflow-y-auto border p-2 rounded"
+    >
+      <ul id="groupList" class="space-y-2"></ul>
+      <p id="loadingText" class="text-gray-500 text-center hidden">
+        Loading...
+      </p>
+    </div>
+
+    <button
+      onclick="closeGroupModal()"
+      class="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 w-full"
+    >
+      Close
+    </button>
+  </div>
+</div>
+
+<script src="/js/whatsback-editor.js"></script>
+<script src="/js/message.js"></script>
