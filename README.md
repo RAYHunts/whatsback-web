@@ -146,6 +146,32 @@ NODE_ENV=production node server.js
 
 Your server should start on the port defined in the `.env` file (default is 5001).
 
+## Available REST API
+
+1. **Sending Message to Contact**
+
+  ```
+  POST http://<YOUR_URL>:<APP_PORT>/api/send-message
+  Content-Type: application/json
+
+  {
+      "number": "08123456789",
+      "message": "Hi, I am using Whatsback Web!"
+  }
+  ```
+
+2. **Sending Message to Group**
+
+  ```
+  POST http://<YOUR_URL>:<APP_PORT>/api/send-group-message
+  Content-Type: application/json
+
+  {
+      "groupId": "123456789@g.us",
+      "message": "Hi, I am using Whatsback Web!"
+  }
+  ```
+
 ## Security Considerations
 
 - This project uses middleware like Helmet, express-rate-limit, and hpp to help protect against common web vulnerabilities.
