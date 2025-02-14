@@ -159,6 +159,8 @@ Your server should start on the port defined in the `.env` file (default is 5001
       "message": "Hi, I am using Whatsback Web!"
   }
   ```
+  > [!NOTE]
+  > For Indonesian Phone Number you can use `0` prefix or prefixed with country code `62`. For other phone number it should use country code.
 
 2. **Sending Message to Group**
 
@@ -171,6 +173,8 @@ Your server should start on the port defined in the `.env` file (default is 5001
       "message": "Hi, I am using Whatsback Web!"
   }
   ```
+  > [!TIP]
+  > You can get the `groupId` from Whatsback GUI/UI at **Send a Group Message** page. Select **Send a Group Message** from navigation menu > Click **Select Group** button > Select The Group.
 
 ## Security Considerations
 
