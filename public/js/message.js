@@ -44,7 +44,7 @@ async function sendMessage() {
   const message = waEditor.getContent();
   if (number && message) {
     try {
-      const response = await fetch("/api/message/send-message", {
+      const response = await fetch(`${SAFE_API_URL}/api/message/send-message`, {
         method: "post",
         headers: {
           "Content-Type": "application/json",
@@ -170,7 +170,7 @@ async function sendGroupMessage() {
   if (groupId && message) {
     try {
       const response = await fetch(
-        "/api/message/send-group-message",
+        `${SAFE_API_URL}/api/message/send-group-message`,
         {
           method: "post",
           headers: {

@@ -91,10 +91,19 @@ const formatInternationalPhoneNumber = (number) => {
   }
 };
 
+const parseOrigins = (value) => {
+  if (!value || typeof value !== 'string') return "*";
+  // Split on comma, trim spaces, and filter out any empty entries
+  const origins = value.split(',').map(o => o.trim()).filter(o => o.length > 0);
+  // Return the array if any valid entries exist, otherwise default to "*"
+  return origins.length > 0 ? origins : "*";
+};
+
 module.exports = {
   sleep,
   serverLog,
   phoneNumberFormatter,
   removeDuplicateContacts,
   formatInternationalPhoneNumber,
+  parseOrigins
 };

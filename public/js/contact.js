@@ -17,7 +17,7 @@ async function loadContacts() {
   try {
     // Use encodeURIComponent for the search term
     const response = await fetch(
-      `/api/contacts?page=${page}&perPage=${perPage}&search=${encodeURIComponent(
+      `${SAFE_API_URL}/api/contacts?page=${page}&perPage=${perPage}&search=${encodeURIComponent(
         searchTerm
       )}`
     );
@@ -49,7 +49,7 @@ async function loadContacts() {
         );
         li.innerHTML = `
             <div class="flex items-center justify-start gap-2">
-              <div class="bg-black h-10 w-10 rounded-full"></div>
+              <div class="h-10 w-10 rounded-full bg-black bg-cover bg-center" style="background-image: url('${contact.profilePicture}');"></div>
               <div>
                 <strong class="font-bold">${contact.name}</strong>
                 <p class="font-mono text-gray-500">

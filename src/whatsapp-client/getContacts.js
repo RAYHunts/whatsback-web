@@ -1,5 +1,10 @@
 const { insertOrReplaceMany } = require("../models/contact");
 
+/**
+ * Fetches all contacts from the WhatsApp client, filters out contacts
+ * that are not valid users, and inserts them into the contacts table.
+ * @param {Client} client - The WhatsApp client instance.
+ */
 module.exports = async (client) => {
   const allContacts = await client.getContacts();
   const contacts = [];
@@ -16,6 +21,7 @@ module.exports = async (client) => {
         contacts.push({
           name: contact.name,
           number: contact.number,
+          profilePicture: `https://robohash.org/${contact.number}`,
         });
       }
     }

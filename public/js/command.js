@@ -71,7 +71,7 @@ cancelButton.addEventListener("click", () => {
 async function loadNewCommand() {
   try {
     // Fetch the updated list of commands from the server
-    const response = await fetch("/api/command");
+    const response = await fetch(`${SAFE_API_URL}/api/command`);
     const commands = await response.json();
 
     // Get the table body element
@@ -196,7 +196,7 @@ modalForm.addEventListener("submit", async (e) => {
   const data = Object.fromEntries(formData.entries());
 
   if (data.action === "add") {
-    const response = await fetch("/api/command", {
+    const response = await fetch(`${SAFE_API_URL}/api/command`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -219,7 +219,7 @@ modalForm.addEventListener("submit", async (e) => {
     }
   } else if (data.action === "edit") {
     const response = await fetch(
-      `/api/command/${data.command_id}`,
+      `${SAFE_API_URL}/api/command/${data.command_id}`,
       {
         method: "PUT",
         headers: {
@@ -244,7 +244,7 @@ modalForm.addEventListener("submit", async (e) => {
     }
   } else if (data.action === "delete") {
     const response = await fetch(
-      `/api/command/${data.command_id}`,
+      `${SAFE_API_URL}/api/command/${data.command_id}`,
       {
         method: "DELETE",
       }

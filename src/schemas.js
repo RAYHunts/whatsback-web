@@ -13,6 +13,20 @@ const contacts = () => {
   return db.prepare(sql);
 };
 
+const addProfilePictureInContact = () => {
+  const columns = db.prepare("PRAGMA table_info(contacts)").all();
+  const columnExists = columns.some((col) => col.name === "profilePicture");
+
+  if (!columnExists) {
+    const contactImage = Math.random().toString(36).substring(2);
+    const sql = `
+      ALTER TABLE contacts 
+      ADD COLUMN profilePicture TEXT NOT NULL DEFAULT 'https://robohash.org/${contactImage}'
+    `;
+    db.prepare(sql).run();
+  }
+};
+
 const groups = () => {
   const sql = `CREATE TABLE IF NOT EXISTS groups (
     groupId TEXT PRIMARY KEY,
@@ -20,12 +34,13 @@ const groups = () => {
     totalParticipants INTEGER
   )`;
   return db.prepare(sql);
-}
+};
 
 const init = () => {
-    commands().run();
-    contacts().run();
-    groups().run();
+  commands().run();
+  contacts().run();
+  addProfilePictureInContact();
+  groups().run();
 };
 
 module.exports = init;
