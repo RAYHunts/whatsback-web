@@ -26,6 +26,11 @@ const serverLog = (message) => {
   console.log(`${formattedTimestamp} - BACKEND_LOG: ${message}`.toUpperCase());
 };
 
+/**
+ * Formats a given phone number into a WhatsApp-compatible format.
+ * @param {string} number - The phone number to format.
+ * @returns {string} The formatted phone number.
+ */
 const phoneNumberFormatter = function (number) {
   let formatted = number.replace(/\D/g, "");
 
@@ -63,11 +68,16 @@ const removeDuplicateContacts = (contacts) => {
   return Array.from(uniqueContactsMap.values());
 };
 
+/**
+ * Formats a given phone number into a WhatsApp-compatible international format.
+ * @param {string} number - The phone number to format.
+ * @returns {string} The formatted phone number.
+ */
 const formatInternationalPhoneNumber = (number) => {
   number = number.toString();
   // Ensure the number starts with "62" (Indonesia's country code)
   if (!number.startsWith("62")) {
-    return "Invalid Indonesian number";
+    return number;
   }
 
   // Remove the country code and add the plus sign
@@ -91,6 +101,12 @@ const formatInternationalPhoneNumber = (number) => {
   }
 };
 
+/**
+ * Takes a string of comma-separated origins and returns an array of valid origins.
+ * If the input is empty, not a string, or contains only whitespace, returns "*".
+ * @param {string} value - The string of comma-separated origins
+ * @returns {string[]|string} - The array of valid origins or "*".
+ */
 const parseOrigins = (value) => {
   if (!value || typeof value !== 'string') return "*";
   // Split on comma, trim spaces, and filter out any empty entries
