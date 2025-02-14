@@ -1,9 +1,18 @@
-# Whatsback Provider
-
-Whatsback Provider is a simple WhatsApp provider that offers basic functionality such as predefined static commands, sending messages to contacts or groups, and listing all contacts. This project leverages the unofficial [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) package to interface with WhatsApp Web.
-
 > [!CAUTION]
 > WhatsApp Web and whatsapp-web.js are not officially supported by WhatsApp. Use this project at your own risk.
+
+<p align="center">
+  <img src="/public/images/logo-whatsback-banner.png" width="50%" />
+</p>
+<p align="center">
+  <img src="https://github.com/darkterminal/whatsback-web/actions/workflows/release.yml/badge.svg" alt="Whatsback Web GitHub Action" />
+  <img src="https://img.shields.io/github/tag/darkterminal/whatsback-web" alt="Whatsback Web Tag" />
+  <img src="https://img.shields.io/github/v/release/darkterminal/whatsback-web" alt="Whatsback Web Release" />
+  <img src="https://img.shields.io/github/v/tag/darkterminal/whatsback-web?label=package" alt="Whatsback Web Package Registry" />
+  <img src="https://img.shields.io/github/downloads/darkterminal/whatsback-web/total" alt="Whatsback Web Downloads" />
+</p>
+
+Whatsback Provider is a simple WhatsApp provider that offers basic functionality such as predefined static commands, sending messages to contacts or groups, and listing all contacts. This project leverages the unofficial [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) package to interface with WhatsApp Web.
 
 > [!NOTE]
 > This is my old project and it's already updated and publicly available for everyone.
@@ -25,8 +34,6 @@ Whatsback Provider is a simple WhatsApp provider that offers basic functionality
 ## Technologies
 
 This project is built with:
-
-Below is an alphabetically sorted list with links to each technology’s GitHub repository:
 
 - [**CORS**](https://github.com/expressjs/cors) – To enable cross‑origin resource sharing.
 - [**EJS**](https://github.com/mde/ejs) – Templating engine.
@@ -57,6 +64,47 @@ Below is an alphabetically sorted list with links to each technology’s GitHub 
 - npm (comes with Node.js)
 - A valid WhatsApp account for testing
 
+### Docker Installation
+
+### Docker CLI
+
+1. **Pull the image:**
+
+   ```bash
+   docker pull ghcr.io/darkterminal/whatsback-web:<version-tag>
+   ```
+
+2. **Run a container:**
+
+   ```bash
+   docker run -d \
+     -p 8169:5001 \ # Web GUI
+     --env NODE_ENV=production \
+     --env APP_PORT=5001 \ # APP AND API
+     ghcr.io/darkterminal/whatsback-web:<version-tag>
+   ```
+
+### docker-compose.yml
+
+```yaml
+services:
+  app:
+    image: ghcr.io/darkterminal/whatsback-web:<version-tag>
+    ports:
+      - "${UI_PORT:-8169}:5001"
+    environment:
+      NODE_ENV: production
+      APP_PORT: ${APP_PORT:-5001}
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge
+```
+
+Replace the `<version-tag>` placeholder with the latest release version from [Package Registry](https://github.com/darkterminal/whatsback-web/pkgs/container/whatsback-web)
+
 ### Installation
 
 1. **Clone the repository:**
@@ -71,7 +119,6 @@ Below is an alphabetically sorted list with links to each technology’s GitHub 
    ```bash
    npm install
    ```
-
 3. **Configure Environment Variables:**
 
    Create a `.env` file in the project root with necessary configuration variables. For example:
@@ -82,13 +129,19 @@ Below is an alphabetically sorted list with links to each technology’s GitHub 
 
     API_CORS_ORIGIN="https://example.com,http://another-example.com"
    ```
-
+   
 ### Running the Project
 
 For development, start the server with:
 
 ```bash
 npm run dev
+```
+
+For production, start the server with:
+
+```bash
+NODE_ENV=production node server.js
 ```
 
 Your server should start on the port defined in the `.env` file (default is 5001).
@@ -101,6 +154,16 @@ Your server should start on the port defined in the `.env` file (default is 5001
 ## Contributing
 
 Contributions are welcome! Please open issues or pull requests to improve the project.
+
+## Donate or Sponsoring
+
+<a href="https://github.com/sponsors/darkterminal">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://i.imgur.com/IcHNW1L.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://i.imgur.com/Yzbwovb.png">
+    <img alt="Shows a black logo in light color mode and a white one in dark color mode." src="https://i.imgur.com/IcHNW1L.png">
+  </picture>
+</a>
 
 ## License
 
