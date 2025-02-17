@@ -9,7 +9,7 @@ const { insertOrReplaceMany } = require("../models/group");
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 
-module.exports = async (client) => {
+module.exports = async function getGroups(client) {
   const chats = await client.getChats();
   const groupChats = chats.filter((chat) => chat.isGroup);
   const groups = groupChats.map((group) => ({
@@ -20,3 +20,4 @@ module.exports = async (client) => {
 
   insertOrReplaceMany(groups);
 };
+

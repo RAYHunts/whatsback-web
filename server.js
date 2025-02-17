@@ -2,7 +2,7 @@ const express = require("express");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const hpp = require("hpp");
-const { createServer } = require("http");
+const { createServer } = require("node:http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const qrcode = require("qrcode");
@@ -12,20 +12,20 @@ const { client, setSocketManager } = require("./src/whatsapp-client");
 const { serverLog, sleep, parseOrigins } = require("./src/helper");
 const state = require("./src/whatsapp-client/state");
 const userInfo = require("./src/whatsapp-client/getProfile");
-const path = require("path");
+const path = require("node:path");
 const expressLayouts = require("express-ejs-layouts");
 const initSchemas = require("./src/schemas");
 
 // API Routes
-const commandRoutes = require("./src/routes/api/commandRoutes");
-const contactRoutes = require("./src/routes/api/contactRoutes");
-const groupRoutes = require("./src/routes/api/groupRoutes");
-const messageRoutes = require("./src/routes/api/messageRoutes");
+const commandRoutes = require("./src/routes/api/command-routes");
+const contactRoutes = require("./src/routes/api/contact-routes");
+const groupRoutes = require("./src/routes/api/group-routes");
+const messageRoutes = require("./src/routes/api/message-routes");
 
 // Frontend Routes
-const commandFrontRoutes = require("./src/routes/commandFrontRoutes");
-const messageFrontRoutes = require("./src/routes/messageFrontRoutes");
-const contactFrontRoutes = require("./src/routes/contactFrontRoutes");
+const commandFrontRoutes = require("./src/routes/command-front-routes");
+const messageFrontRoutes = require("./src/routes/message-front-routes");
+const contactFrontRoutes = require("./src/routes/contact-front-routes");
 
 initSchemas();
 
@@ -35,19 +35,20 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
+      blockAllMixedContent: [],
+      frameAncestors: ["'self'"],
       scriptSrc: [
         "'self'",
         "https://cdn.tailwindcss.com",
         "https://cdnjs.cloudflare.com",
         "https://cdn.jsdelivr.net",
-        "'unsafe-inline'", // consider replacing with a nonce or hash in production
+        "'unsafe-inline'",
       ],
-      // Include cdnjs.cloudflare.com to allow Font Awesome CSS
       styleSrc: [
         "'self'",
         "https://cdn.tailwindcss.com",
         "https://cdnjs.cloudflare.com",
-        "'unsafe-inline'", // consider using a hash/nonce for inline styles
+        "'unsafe-inline'",
       ],
       imgSrc: [
         "'self'",
@@ -132,8 +133,8 @@ io.on("connection", async (socket) => {
 
   // Emit current state to the newly connected socket
   if (state.lastQR) {
-    qrcode.toDataURL(state.lastQR, (err, url) => {
-      if (!err) {
+    qrcode.toDataURL(state.lastQR, (error, url) => {
+      if (!error) {
         socket.emit("qr", url);
         socket.emit("logs", "QR Code received, scan please!");
         serverLog("QR Code sent to new socket");
@@ -191,8 +192,8 @@ io.on("connection", async (socket) => {
 setSocketManager(connectedSockets);
 
 // Global error handling middleware (optional, but recommended)
-app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err);
+app.use((error, req, res, next) => {
+  console.error("Unhandled error:", error);
   res.status(500).json({ message: "Internal Server Error" });
 });
 

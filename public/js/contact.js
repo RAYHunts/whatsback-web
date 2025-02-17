@@ -5,14 +5,14 @@ let hasMoreContacts = true;
 let searchTerm = "";
 let debounceTimeout;
 
-const loadingTextEl = document.getElementById("loadingText");
-const contactListEl = document.getElementById("contactList");
-const contactContainerEl = document.getElementById("contactContainer");
+const loadingTextElement = document.querySelector("#loadingText");
+const contactListElement = document.querySelector("#contactList");
+const contactContainerElement = document.querySelector("#contactContainer");
 
 async function loadContacts() {
   if (isLoading || !hasMoreContacts) return;
   isLoading = true;
-  loadingTextEl.classList.remove("hidden");
+  loadingTextElement.classList.remove("hidden");
 
   try {
     // Use encodeURIComponent for the search term
@@ -37,9 +37,9 @@ async function loadContacts() {
               </div>
             </div>
           `;
-      contactListEl.appendChild(li);
+      contactListElement.append(li);
     } else {
-      contactsData.contacts.forEach((contact) => {
+      for (const contact of contactsData.contacts) {
         const li = document.createElement("li");
         li.classList.add(
           "cursor-pointer",
@@ -58,9 +58,9 @@ async function loadContacts() {
               </div>
             </div>
           `;
-        li.onclick = () => selectContact(contact.number);
-        contactListEl.appendChild(li);
-      });
+        li.addEventListener('click', () => selectContact(contact.number));
+        contactListElement.append(li);
+      }
     }
 
     if (contactsData.contacts.length < perPage) {
@@ -73,29 +73,29 @@ async function loadContacts() {
   }
 
   isLoading = false;
-  loadingTextEl.classList.add("hidden");
+  loadingTextElement.classList.add("hidden");
 }
 
 function searchContacts() {
-  searchTerm = document.getElementById("searchContact").value.trim();
+  searchTerm = document.querySelector("#searchContact").value.trim();
   page = 1;
   hasMoreContacts = true;
-  contactListEl.innerHTML = "";
+  contactListElement.innerHTML = "";
   loadContacts();
 }
 
-loadContacts();
+await loadContacts();
 
-contactContainerEl.addEventListener("scroll", () => {
+contactContainerElement.addEventListener("scroll", () => {
   if (
-    contactContainerEl.scrollTop + contactContainerEl.clientHeight >=
-    contactContainerEl.scrollHeight - 10
+    contactContainerElement.scrollTop + contactContainerElement.clientHeight >=
+    contactContainerElement.scrollHeight - 10
   ) {
     loadContacts();
   }
 });
 
-document.getElementById("searchContact").addEventListener("input", () => {
+document.querySelector("#searchContact").addEventListener("input", () => {
   clearTimeout(debounceTimeout);
   debounceTimeout = setTimeout(searchContacts, 500);
 });

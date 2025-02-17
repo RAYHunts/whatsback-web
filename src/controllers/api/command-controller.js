@@ -1,5 +1,12 @@
 const command = require("../../models/command"); // Assuming you have a command model
 
+/**
+ * GET /api/command
+ * Retrieves all available commands.
+ * @param {import("express").Request} req - The request object.
+ * @param {import("express").Response} res - The response object.
+ * @returns {Promise<void>}
+ */
 const getAllCommands = async (req, res) => {
   try {
     const commands = command.iterate();
@@ -17,6 +24,13 @@ const getAllCommands = async (req, res) => {
   }
 };
 
+/**
+ * POST /api/command
+ * Creates a new command.
+ * @param {import("express").Request} req - The request object.
+ * @param {import("express").Response} res - The response object.
+ * @returns {Promise<void>}
+ */
 const createCommand = async (req, res) => {
   try {
     const { command: command_name, response } = req.body;
@@ -41,6 +55,13 @@ const createCommand = async (req, res) => {
   }
 };
 
+/**
+ * PUT /api/command/:command_id
+ * Updates an existing command.
+ * @param {import("express").Request} req - The request object.
+ * @param {import("express").Response} res - The response object.
+ * @returns {Promise<void>}
+ */
 const updateCommand = async (req, res) => {
   try {
     const { command: command_name, response } = req.body;
@@ -65,6 +86,14 @@ const updateCommand = async (req, res) => {
     });
   }
 };
+
+/**
+ * DELETE /api/command/:command_id
+ * Deletes an existing command.
+ * @param {import("express").Request} req - The request object.
+ * @param {import("express").Response} res - The response object.
+ * @returns {Promise<void>}
+ */
 
 const deleteCommand = async (req, res) => {
   try {

@@ -9,15 +9,15 @@ const { serverLog } = require("../../helper");
  * @param {Object} state - The application state object.
  * @returns {void}
  */
-module.exports = (qr, connectedSockets, state) => {
+module.exports = function qrCodeHandler(qr, connectedSockets, state) {
   serverLog("QR Code is received");
   state.lastQR = qr;
-  connectedSockets.forEach((socket) => {
-    qrcode.toDataURL(qr, (err, url) => {
-      if (!err) {
+  for (const socket of connectedSockets) {
+    qrcode.toDataURL(qr, (error, url) => {
+      if (!error) {
         socket.emit("qr", url);
         socket.emit("logs", "QR Code received, scan please!");
       }
     });
-  });
+  }
 };

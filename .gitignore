@@ -176,3 +176,4 @@ dist
 api_specs/
 *.db*
 .wwebjs_*
+static/

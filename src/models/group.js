@@ -1,4 +1,4 @@
-const db = require("../db");
+const database = require("../database");
 const { serverLog } = require("../helper");
 
 const table = "groups";
@@ -13,7 +13,7 @@ module.exports = {
    * @returns {number} The total number of groups.
    */
   count: () => {
-    const stmt = db.prepare(`SELECT COUNT(groupId) AS total FROM ${table}`);
+    const stmt = database.prepare(`SELECT COUNT(groupId) AS total FROM ${table}`);
     const result = stmt.get();
     return result.total;
   },
@@ -23,7 +23,7 @@ module.exports = {
    * @returns {Iterator} An iterator for all groups in the database.
    */
   iterate: () => {
-    const stmt = db.prepare(`SELECT * FROM ${table} ORDER BY groupName ASC`);
+    const stmt = database.prepare(`SELECT * FROM ${table} ORDER BY groupName ASC`);
     const iterator = stmt.iterate();
 
     // Convert the iterator to an array
@@ -47,12 +47,12 @@ module.exports = {
 
     if (search) {
       let sql = `SELECT * FROM ${table} WHERE groupName LIKE '%${search}%' ORDER BY groupName ASC LIMIT ? OFFSET ?`;
-      const stmt = db.prepare(sql);
+      const stmt = database.prepare(sql);
       return stmt.all(limit, offset);
     }
 
     let sql = `SELECT * FROM ${table} ORDER BY groupName ASC LIMIT ? OFFSET ?`;
-    const stmt = db.prepare(sql);
+    const stmt = database.prepare(sql);
     return stmt.all(limit, offset);
   },
 
@@ -65,12 +65,12 @@ module.exports = {
    * @throws {Error} If an error occurs during the database transaction.
    */
   insertOrReplaceMany: (groups) => {
-    const insertOrReplace = db.prepare(`
+    const insertOrReplace = database.prepare(`
       INSERT OR REPLACE INTO ${table} (groupId, groupName, totalParticipants)
       VALUES (@groupId, @groupName, @totalParticipants)
     `);
 
-    const insertTransaction = db.transaction((groups) => {
+    const insertTransaction = database.transaction((groups) => {
       for (const group of groups) {
         insertOrReplace.run(group);
       }

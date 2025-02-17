@@ -1,8 +1,9 @@
-const db = require("./db");
+const database = require("./database");
+const crypto = require("node:crypto");
 
 const commands = () => {
   const sql = `CREATE TABLE IF NOT EXISTS commands (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, command TEXT UNIQUE NOT NULL, response TEXT NOT NULL)`;
-  return db.prepare(sql);
+  return database.prepare(sql);
 };
 
 const contacts = () => {
@@ -10,20 +11,20 @@ const contacts = () => {
     number INTEGER PRIMARY KEY,
     name TEXT
   )`;
-  return db.prepare(sql);
+  return database.prepare(sql);
 };
 
 const addProfilePictureInContact = () => {
-  const columns = db.prepare("PRAGMA table_info(contacts)").all();
+  const columns = database.prepare("PRAGMA table_info(contacts)").all();
   const columnExists = columns.some((col) => col.name === "profilePicture");
 
   if (!columnExists) {
-    const contactImage = Math.random().toString(36).substring(2);
+    const contactImage = crypto.randomBytes(4).toString("hex");
     const sql = `
       ALTER TABLE contacts 
       ADD COLUMN profilePicture TEXT NOT NULL DEFAULT 'https://robohash.org/${contactImage}'
     `;
-    db.prepare(sql).run();
+    database.prepare(sql).run();
   }
 };
 
@@ -33,7 +34,7 @@ const groups = () => {
     groupName TEXT,
     totalParticipants INTEGER
   )`;
-  return db.prepare(sql);
+  return database.prepare(sql);
 };
 
 const init = () => {
@@ -44,3 +45,4 @@ const init = () => {
 };
 
 module.exports = init;
+

@@ -1,4 +1,4 @@
-const db = require("../db");
+const database = require("../database");
 
 const table = "commands";
 
@@ -8,7 +8,7 @@ module.exports = {
    * @returns {number} The total count of records in the table.
    */
   count: () => {
-    const stmt = db.prepare(`SELECT COUNT(id) AS total FROM ${table}`);
+    const stmt = database.prepare(`SELECT COUNT(id) AS total FROM ${table}`);
     const result = stmt.get();
     return result.total;
   },
@@ -19,7 +19,7 @@ module.exports = {
    * @returns {IterableIterator<Object>} An iterator yielding each row as an object.
    */
   iterate: () => {
-    const stmt = db.prepare(`SELECT * FROM ${table}`);
+    const stmt = database.prepare(`SELECT * FROM ${table}`);
     const iterator = stmt.iterate();
 
     // Convert the iterator to an array
@@ -39,7 +39,7 @@ module.exports = {
    * @returns {number} The number of rows inserted.
    */
   save: (data) => {
-    const stmt = db.prepare(
+    const stmt = database.prepare(
       `INSERT INTO ${table} (command, response) VALUES (?, ?)`
     );
     const info = stmt.run(data.command_name, data.response);
@@ -56,7 +56,7 @@ module.exports = {
    * @returns {number} The number of rows affected by the update.
    */
   update: (id, data) => {
-    const stmt = db.prepare(
+    const stmt = database.prepare(
       `UPDATE ${table} SET command = ?, response = ? WHERE id = ?`
     );
     const info = stmt.run(data.command_name, data.response, id);
@@ -70,7 +70,7 @@ module.exports = {
    * @returns {number} The number of rows affected by the deletion.
    */
   delete: (id) => {
-    const stmt = db.prepare(`DELETE FROM ${table} WHERE id = ?`);
+    const stmt = database.prepare(`DELETE FROM ${table} WHERE id = ?`);
     const info = stmt.run(id);
 
     return info.changes;

@@ -1,4 +1,4 @@
-const db = require("../db");
+const database = require("../database");
 const { serverLog } = require("../helper");
 
 const table = "contacts";
@@ -9,7 +9,7 @@ module.exports = {
    * @returns {number} - Total number of contacts.
    */
   count: () => {
-    const stmt = db.prepare(`SELECT COUNT(number) AS total FROM ${table}`);
+    const stmt = database.prepare(`SELECT COUNT(number) AS total FROM ${table}`);
     const result = stmt.get();
     return result.total;
   },
@@ -19,7 +19,7 @@ module.exports = {
    * @returns {Iterator} - Iterator for all contacts.
    */
   iterate: () => {
-    const stmt = db.prepare(`SELECT * FROM ${table} ORDER BY name ASC`);
+    const stmt = database.prepare(`SELECT * FROM ${table} ORDER BY name ASC`);
     const iterator = stmt.iterate();
 
     // Convert the iterator to an array
@@ -43,12 +43,12 @@ module.exports = {
 
     if (search) {
       let sql = `SELECT * FROM ${table} WHERE name LIKE '%${search}%' ORDER BY name ASC LIMIT ? OFFSET ?`;
-      const stmt = db.prepare(sql);
+      const stmt = database.prepare(sql);
       return stmt.all(limit, offset);
     }
 
     let sql = `SELECT * FROM ${table} ORDER BY name ASC LIMIT ? OFFSET ?`;
-    const stmt = db.prepare(sql);
+    const stmt = database.prepare(sql);
     return stmt.all(limit, offset);
   },
 
@@ -57,12 +57,12 @@ module.exports = {
    * @param {Array} contacts - Array of contact objects with `name` and `number` properties.
    */
   insertOrReplaceMany: (contacts) => {
-    const insertOrReplace = db.prepare(`
+    const insertOrReplace = database.prepare(`
       INSERT OR REPLACE INTO ${table} (name, number)
       VALUES (@name, @number)
     `);
 
-    const insertTransaction = db.transaction((contacts) => {
+    const insertTransaction = database.transaction((contacts) => {
       for (const contact of contacts) {
         insertOrReplace.run(contact);
       }

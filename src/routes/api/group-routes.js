@@ -1,5 +1,5 @@
 const express = require("express");
-const { getPaginateGroup } = require("../../controllers/api/groupController");
+const { getPaginateGroup } = require("../../controllers/api/group-controller");
 const router = express.Router();
 
 // GET /api/groups

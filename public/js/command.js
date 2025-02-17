@@ -1,13 +1,13 @@
-const modal = document.getElementById("modal");
-const modalTitle = document.getElementById("modalTitle");
-const modalContent = document.getElementById("modalContent");
-const modalForm = document.getElementById("modalForm");
-const commandInput = document.getElementById("command");
-const responseInput = document.getElementById("response");
-const cancelButton = document.getElementById("cancelButton");
+const modal = document.querySelector("#modal");
+const modalTitle = document.querySelector("#modalTitle");
+const modalContent = document.querySelector("#modalContent");
+const modalForm = document.querySelector("#modalForm");
+const commandInput = document.querySelector("#command");
+const responseInput = document.querySelector("#response");
+const cancelButton = document.querySelector("#cancelButton");
 
 // Function to open the modal with a specific title and command data
-const openModal = (title, cmd = null) => {
+const openModal = (title, cmd) => {
   modalTitle.textContent = title;
   commandInput.value = cmd ? cmd.command : "";
   responseInput.value = cmd ? cmd.response : "";
@@ -21,14 +21,14 @@ const openModal = (title, cmd = null) => {
 };
 
 // Add Command Button
-document.getElementById("addCommandButton").addEventListener("click", () => {
+document.querySelector("#addCommandButton").addEventListener("click", () => {
   openModal("Add New Command");
 });
 
 // Edit Command Buttons
-document.querySelectorAll(".editCommandButton").forEach((button) => {
+for (const button of document.querySelectorAll(".editCommandButton")) {
   button.addEventListener("click", (event) => {
-    const cmd = JSON.parse(event.target.getAttribute("data-cmd"));
+    const cmd = JSON.parse(event.target.dataset.cmd);
 
     document.querySelector("#command_id").value = cmd.id;
     document.querySelector("#form_action").value = "edit";
@@ -38,12 +38,12 @@ document.querySelectorAll(".editCommandButton").forEach((button) => {
     commandInput.parentElement.classList.remove("hidden");
     responseInput.parentElement.classList.remove("hidden");
   });
-});
+}
 
 // Delete Command Buttons
-document.querySelectorAll(".deleteCommandButton").forEach((button) => {
+for (const button of document.querySelectorAll(".deleteCommandButton")) {
   button.addEventListener("click", (event) => {
-    const cmd = JSON.parse(event.target.getAttribute("data-cmd"));
+    const cmd = JSON.parse(event.target.dataset.cmd);
 
     document.querySelector("#command_id").value = cmd.id;
     document.querySelector("#form_action").value = "delete";
@@ -53,7 +53,7 @@ document.querySelectorAll(".deleteCommandButton").forEach((button) => {
     commandInput.parentElement.classList.add("hidden");
     responseInput.parentElement.classList.add("hidden");
   });
-});
+}
 
 // Cancel Button
 cancelButton.addEventListener("click", () => {
@@ -83,7 +83,7 @@ async function loadNewCommand() {
     const commandData = commands.data || commands;
 
     // Append the new rows with the updated list of commands
-    commandData.commands.forEach((cmd) => {
+    for (const cmd of commandData.commands) {
       const row = document.createElement("tr");
       row.classList.add(
         "hover:bg-gray-50",
@@ -127,7 +127,7 @@ async function loadNewCommand() {
         "dark:hover:bg-blue-700"
       );
       editButton.textContent = "Edit";
-      editButton.setAttribute("data-cmd", JSON.stringify(cmd));
+      editButton.dataset.cmd = JSON.stringify(cmd);
 
       const deleteButton = document.createElement("button");
       deleteButton.classList.add(
@@ -142,22 +142,22 @@ async function loadNewCommand() {
         "dark:hover:bg-red-700"
       );
       deleteButton.textContent = "Delete";
-      deleteButton.setAttribute("data-cmd", JSON.stringify(cmd));
+      deleteButton.dataset.cmd = JSON.stringify(cmd);
 
-      actionsCell.appendChild(editButton);
-      actionsCell.appendChild(deleteButton);
+      actionsCell.append(editButton);
+      actionsCell.append(deleteButton);
 
-      row.appendChild(commandCell);
-      row.appendChild(responseCell);
-      row.appendChild(actionsCell);
+      row.append(commandCell);
+      row.append(responseCell);
+      row.append(actionsCell);
 
-      tableBody.appendChild(row);
-    });
+      tableBody.append(row);
+    }
 
     // Re-attach event listeners to the new edit and delete buttons
-    document.querySelectorAll(".editCommandButton").forEach((button) => {
+    for (const button of document.querySelectorAll(".editCommandButton")) {
       button.addEventListener("click", (event) => {
-        const cmd = JSON.parse(event.target.getAttribute("data-cmd"));
+        const cmd = JSON.parse(event.target.dataset.cmd);
 
         document.querySelector("#command_id").value = cmd.id;
         document.querySelector("#form_action").value = "edit";
@@ -167,11 +167,11 @@ async function loadNewCommand() {
         commandInput.parentElement.classList.remove("hidden");
         responseInput.parentElement.classList.remove("hidden");
       });
-    });
+    }
 
-    document.querySelectorAll(".deleteCommandButton").forEach((button) => {
+    for (const button of document.querySelectorAll(".deleteCommandButton")) {
       button.addEventListener("click", (event) => {
-        const cmd = JSON.parse(event.target.getAttribute("data-cmd"));
+        const cmd = JSON.parse(event.target.dataset.cmd);
 
         document.querySelector("#command_id").value = cmd.id;
         document.querySelector("#form_action").value = "delete";
@@ -181,7 +181,7 @@ async function loadNewCommand() {
         commandInput.parentElement.classList.add("hidden");
         responseInput.parentElement.classList.add("hidden");
       });
-    });
+    }
   } catch (error) {
     console.error("Error loading new command:", error);
     createToast("warning", "Failed!", "Error loading new command.");
@@ -189,13 +189,14 @@ async function loadNewCommand() {
 }
 
 // Form Submission
-modalForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+modalForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-  const formData = new FormData(e.target);
+  const formData = new FormData(event.target);
   const data = Object.fromEntries(formData.entries());
 
-  if (data.action === "add") {
+  switch (data.action) {
+  case "add": {
     const response = await fetch(`${SAFE_API_URL}/api/command`, {
       method: "POST",
       headers: {
@@ -217,7 +218,10 @@ modalForm.addEventListener("submit", async (e) => {
     } else {
       createToast("warning", "Failed!", result.message);
     }
-  } else if (data.action === "edit") {
+  
+  break;
+  }
+  case "edit": {
     const response = await fetch(
       `${SAFE_API_URL}/api/command/${data.command_id}`,
       {
@@ -242,7 +246,10 @@ modalForm.addEventListener("submit", async (e) => {
     } else {
       createToast("warning", "Failed!", result.message);
     }
-  } else if (data.action === "delete") {
+  
+  break;
+  }
+  case "delete": {
     const response = await fetch(
       `${SAFE_API_URL}/api/command/${data.command_id}`,
       {
@@ -260,6 +267,10 @@ modalForm.addEventListener("submit", async (e) => {
     } else {
       createToast("warning", "Failed!", result.message);
     }
+  
+  break;
+  }
+  // No default
   }
 
   modal.classList.add("opacity-0");

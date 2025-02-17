@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const validateRequestBody = require("../../middlewares/validateRequestBody");
+const validateRequestBody = require("../../middlewares/validate-request-body");
 const {
   sendMessageToUser,
   sendMessageToGroup,
-} = require("../../controllers/api/messageController");
+} = require("../../controllers/api/message-controller");
 
 router.post(
   "/send-message",

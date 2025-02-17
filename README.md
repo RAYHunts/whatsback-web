@@ -1,5 +1,5 @@
 > [!CAUTION]
-> WhatsApp Web and whatsapp-web.js are not officially supported by WhatsApp. Use this project at your own risk.
+> Whatsback Web and whatsapp-web.js are not officially supported by WhatsApp. Use this project at your own risk.
 
 <p align="center">
   <img src="/public/images/logo-whatsback-banner.png" width="50%" />

@@ -2,18 +2,19 @@ let page = 1;
 const perPage = 10;
 let isLoading = false;
 let hasMoreContacts = true;
+let hasMoreGroups = true;
 let searchTerm = "";
 let debounceTimeout;
 
-const loadingTextEl = document.getElementById("loadingText");
+const loadingTextElement = document.querySelector("#loadingText");
 
-const contactListEl = document.getElementById("contactList");
-const contactContainerEl = document.getElementById("contactContainer");
-const contactModal = document.getElementById("contactModal");
+const contactListElement = document.querySelector("#contactList");
+const contactContainerElement = document.querySelector("#contactContainer");
+const contactModal = document.querySelector("#contactModal");
 
-const groupListEl = document.getElementById("groupList");
-const groupContainerEl = document.getElementById("groupContainer");
-const groupModal = document.getElementById("groupModal");
+const groupListElement = document.querySelector("#groupList");
+const groupContainerElement = document.querySelector("#groupContainer");
+const groupModal = document.querySelector("#groupModal");
 
 const waEditor = createWhatsAppWysiwyg("editor-container", {
   placeholder: "Type your WhatsApp message here...",
@@ -23,7 +24,7 @@ function openContactModal() {
   // Reset state for a fresh load
   page = 1;
   hasMoreContacts = true;
-  contactListEl.innerHTML = "";
+  contactListElement.innerHTML = "";
   loadContacts();
   contactModal.classList.add("flex");
   contactModal.classList.remove("hidden");
@@ -35,12 +36,12 @@ function closeContactModal() {
 }
 
 function selectContact(number) {
-  document.getElementById("number").value = number;
+  document.querySelector("#number").value = number;
   closeContactModal();
 }
 
 async function sendMessage() {
-  const number = document.getElementById("number").value;
+  const number = document.querySelector("#number").value;
   const message = waEditor.getContent();
   if (number && message) {
     try {
@@ -56,7 +57,7 @@ async function sendMessage() {
       });
       const result = await response.json();
       if (result.status) {
-        document.getElementById("number").value = "";
+        document.querySelector("#number").value = "";
         waEditor.editorElement.innerHTML = "";
         waEditor.previewElement.innerHTML = "";
         waEditor.editorElement.dispatchEvent(new Event("input"));
@@ -76,7 +77,7 @@ async function sendMessage() {
 async function loadContacts() {
   if (isLoading || !hasMoreContacts) return;
   isLoading = true;
-  loadingTextEl.classList.remove("hidden");
+  loadingTextElement.classList.remove("hidden");
 
   try {
     // Use encodeURIComponent for the search term
@@ -101,9 +102,9 @@ async function loadContacts() {
             </div>
           </div>
         `;
-      contactListEl.appendChild(li);
+      contactListElement.append(li);
     } else {
-      contactsData.contacts.forEach((contact) => {
+      for (const contact of contactsData.contacts) {
         const li = document.createElement("li");
         li.classList.add("cursor-pointer", "hover:bg-gray-200", "p-2", "rounded");
         li.innerHTML = `
@@ -117,9 +118,9 @@ async function loadContacts() {
             </div>
           </div>
         `;
-        li.onclick = () => selectContact(contact.number);
-        contactListEl.appendChild(li);
-      });
+        li.addEventListener('click', () => selectContact(contact.number));
+        contactListElement.append(li);
+      }
     }
 
     if (contactsData.contacts.length < perPage) {
@@ -132,23 +133,22 @@ async function loadContacts() {
   }
 
   isLoading = false;
-  loadingTextEl.classList.add("hidden");
+  loadingTextElement.classList.add("hidden");
 }
 
 // Debounced search: clear previous results and load contacts based on new search term
 function searchContacts() {
-  searchTerm = document.getElementById("searchContact").value.trim();
+  searchTerm = document.querySelector("#searchContact").value.trim();
   page = 1;
   hasMoreContacts = true;
-  contactListEl.innerHTML = "";
+  contactListElement.innerHTML = "";
   loadContacts();
 }
 
 function openGroupModal() {
   // Reset state for a fresh load
   page = 1;
-  hasMoreGroups = true;
-  groupListEl.innerHTML = "";
+  groupListElement.innerHTML = "";
   loadGroups();
   groupModal.classList.add("flex");
   groupModal.classList.remove("hidden");
@@ -160,12 +160,12 @@ function closeGroupModal() {
 }
 
 function selectGroup(number) {
-  document.getElementById("number").value = number;
+  document.querySelector("#number").value = number;
   closeGroupModal();
 }
 
 async function sendGroupMessage() {
-  const groupId = document.getElementById("number").value;
+  const groupId = document.querySelector("#number").value;
   const message = waEditor.getContent();
   if (groupId && message) {
     try {
@@ -184,7 +184,7 @@ async function sendGroupMessage() {
       );
       const result = await response.json();
       if (result.status) {
-        document.getElementById("number").value = "";
+        document.querySelector("#number").value = "";
         waEditor.editorElement.innerHTML = "";
         waEditor.previewElement.innerHTML = "";
         waEditor.editorElement.dispatchEvent(new Event("input"));
@@ -212,7 +212,7 @@ async function sendGroupMessage() {
 async function loadGroups() {
   if (isLoading || !hasMoreGroups) return;
   isLoading = true;
-  loadingTextEl.classList.remove("hidden");
+  loadingTextElement.classList.remove("hidden");
 
   try {
     // Use encodeURIComponent for the search term
@@ -230,7 +230,7 @@ async function loadGroups() {
       hasMoreGroups = false;
     }
 
-    groupsData.forEach((group) => {
+    for (const group of groupsData) {
       const li = document.createElement("li");
       li.classList.add("cursor-pointer", "hover:bg-gray-200", "p-2", "rounded");
       li.innerHTML = `
@@ -244,9 +244,9 @@ async function loadGroups() {
               </div>
             </div>
           `;
-      li.onclick = () => selectGroup(group.groupId);
-      groupListEl.appendChild(li);
-    });
+      li.addEventListener('click', () => selectGroup(group.groupId));
+      groupListElement.append(li);
+    }
 
     page++;
   } catch (error) {
@@ -254,46 +254,46 @@ async function loadGroups() {
   }
 
   isLoading = false;
-  loadingTextEl.classList.add("hidden");
+  loadingTextElement.classList.add("hidden");
 }
 
 // Debounced search: clear previous results and load groups based on new search term
 function searchGroups() {
-  searchTerm = document.getElementById("searchGroup").value.trim();
+  searchTerm = document.querySelector("#searchGroup").value.trim();
   page = 1;
   hasMoreGroups = true;
-  groupListEl.innerHTML = "";
+  groupListElement.innerHTML = "";
   loadGroups();
 }
 
 // Listen for scroll events to implement infinite scroll
-if (contactContainerEl) {
-  contactContainerEl.addEventListener("scroll", () => {
+if (contactContainerElement) {
+  contactContainerElement.addEventListener("scroll", () => {
     if (
-      contactContainerEl.scrollTop + contactContainerEl.clientHeight >=
-      contactContainerEl.scrollHeight - 10
+      contactContainerElement.scrollTop + contactContainerElement.clientHeight >=
+      contactContainerElement.scrollHeight - 10
     ) {
       loadContacts();
     }
   });
 
-  document.getElementById("searchContact").addEventListener("input", () => {
+  document.querySelector("#searchContact").addEventListener("input", () => {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(searchContacts, 500);
   });
 }
 
-if (groupContainerEl) {
-  groupContainerEl.addEventListener("scroll", () => {
+if (groupContainerElement) {
+  groupContainerElement.addEventListener("scroll", () => {
     if (
-      groupContainerEl.scrollTop + groupContainerEl.clientHeight >=
-      groupContainerEl.scrollHeight - 10
+      groupContainerElement.scrollTop + groupContainerElement.clientHeight >=
+      groupContainerElement.scrollHeight - 10
     ) {
       loadContacts();
     }
   });
 
-  document.getElementById("searchGroup").addEventListener("input", () => {
+  document.querySelector("#searchGroup").addEventListener("input", () => {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(searchGroups, 500);
   });

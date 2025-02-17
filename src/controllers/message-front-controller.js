@@ -2,7 +2,7 @@ const contacts = require("../models/contact");
 const groups = require("../models/group");
 
 const displaySendMessageToUser = (req, res) => {
-  const contactsToDisplay = contacts.paginate(null, 10, 1);
+  const contactsToDisplay = contacts.paginate(undefined, 10, 1);
   const totalContacts = contacts.count();
   res.render("message", {
     title: "Send Message",
@@ -12,7 +12,7 @@ const displaySendMessageToUser = (req, res) => {
 };
 
 const displaySendMessageToGroup = (req, res) => {
-  const groupsToDisplay = groups.paginate(null, 10, 1);
+  const groupsToDisplay = groups.paginate(undefined, 10, 1);
   const totalGroups = groups.count();
   res.render("group", {
     title: "Send Group Message",

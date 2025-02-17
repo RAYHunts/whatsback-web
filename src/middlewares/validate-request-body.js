@@ -6,7 +6,7 @@
  * @param {Object<string, string>} requiredFields
  * @returns {Function} express middleware
  */
-module.exports = (requiredFields) => {
+module.exports = function validateRequestBody(requiredFields) {
   return (req, res, next) => {
     const errors = [];
 

@@ -5,7 +5,7 @@ const { serverLog } = require("../helper");
  * @param {Client} client - The WhatsApp client instance.
  * @returns {Object}
  */
-module.exports = async (client) => {
+module.exports = async function getProfile (client) {
   try {
     const myId = client.info?.wid?._serialized;
     const myContact = await client.getContactById(myId);
@@ -18,7 +18,7 @@ module.exports = async (client) => {
       name: userName,
       picture: profilePicUrl,
     };
-  } catch (error) {
+  } catch {
     serverLog("Client is not ready yet!");
     return {
       name: "unknown",

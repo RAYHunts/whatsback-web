@@ -101,7 +101,7 @@ function createWhatsAppWysiwyg(containerId, options = {}) {
   const config = { ...defaultConfig, ...options };
 
   // Get the container element.
-  const container = document.getElementById(containerId);
+  const container = document.querySelector(`#${containerId}`);
   if (!container) {
     console.error(`Container with id "${containerId}" not found.`);
     return;
@@ -114,7 +114,7 @@ function createWhatsAppWysiwyg(containerId, options = {}) {
   toolbar.id = "toolbar";
   // Make toolbar full width and use flex layout so buttons share equal width.
   toolbar.className = "flex w-full mb-2";
-  container.appendChild(toolbar);
+  container.append(toolbar);
 
   // Create the editor (contenteditable) with full width.
   const editor = document.createElement("div");
@@ -122,7 +122,7 @@ function createWhatsAppWysiwyg(containerId, options = {}) {
   editor.className = "w-full border border-gray-300 p-2 rounded min-h-[100px]";
   editor.setAttribute("contenteditable", "true");
   editor.setAttribute("placeholder", config.placeholder);
-  container.appendChild(editor);
+  container.append(editor);
 
   // Create the preview area.
   const previewContainer = document.createElement("div");
@@ -130,114 +130,12 @@ function createWhatsAppWysiwyg(containerId, options = {}) {
   const previewTitle = document.createElement("h3");
   previewTitle.className = "font-bold mb-1";
   previewTitle.textContent = "Preview:";
-  previewContainer.appendChild(previewTitle);
+  previewContainer.append(previewTitle);
   const preview = document.createElement("div");
   preview.id = "preview";
   preview.className = "w-full p-2 border border-gray-300 rounded min-h-[100px]";
-  previewContainer.appendChild(preview);
-  container.appendChild(previewContainer);
-
-  // Formatting Functions
-
-  // For "wrap" formatting (e.g., bold, italic, code, etc.)
-  function applyFormatting(markerStart, markerEnd) {
-    editor.focus();
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;
-    const range = selection.getRangeAt(0);
-    if (range.collapsed) {
-      handleCollapsedRange(range, markerStart, markerEnd);
-    } else {
-      handleSelectionRange(range, markerStart, markerEnd);
-    }
-    updatePreview();
-  }
-
-  function handleCollapsedRange(range, start, end) {
-    const textNode = document.createTextNode(start + end);
-    range.insertNode(textNode);
-    range.setStart(textNode, start.length);
-    range.setEnd(textNode, start.length);
-    window.getSelection().removeAllRanges().addRange(range);
-  }
-
-  function handleSelectionRange(range, start, end) {
-    const content = start + range.toString() + end;
-    document.execCommand("insertText", false, content);
-  }
-
-  // For "prefix" formatting (e.g., lists, block quotes)
-  function applyLinePrefix(prefix) {
-    editor.focus();
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;
-    const range = selection.getRangeAt(0);
-    if (range.collapsed) {
-      // Simply insert the prefix at the caret.
-      document.execCommand("insertText", false, prefix);
-    } else {
-      // For multi-line selection, add prefix to each line.
-      const selectedText = range.toString();
-      const lines = selectedText.split("\n");
-      const prefixedLines = lines.map((line) => prefix + line);
-      const newText = prefixedLines.join("\n");
-      document.execCommand("insertText", false, newText);
-    }
-    updatePreview();
-  }
-
-  // Update preview by applying preview rules to the editor's plain text.
-  function updatePreview() {
-    const content = editor.innerText;
-    const formattedContent = config.previewRules.reduce((acc, rule) => {
-      return acc.replace(rule.regex, rule.replacement);
-    }, content);
-    preview.innerHTML = formattedContent;
-  }
-
-  // Initialize the toolbar with buttons.
-  function initializeToolbar() {
-    toolbar.innerHTML = config.toolbarFormats
-      .map((format) => {
-        if (format.type === "wrap") {
-          return `
-            <button
-              id="btn-${format.id}"
-              class="format-btn"
-              data-start="${format.markers[0]}"
-              data-end="${format.markers[1]}"
-            >
-              ${format.label}
-            </button>
-          `;
-        } else if (format.type === "prefix") {
-          return `
-            <button
-              id="btn-${format.id}"
-              class="format-btn"
-              data-prefix="${format.prefix}"
-            >
-              ${format.label}
-            </button>
-          `;
-        }
-        return "";
-      })
-      .join("");
-    config.toolbarFormats.forEach((format) => {
-      const btn = document.getElementById(`btn-${format.id}`);
-      if (!btn) return;
-      if (format.type === "wrap") {
-        btn.addEventListener("click", () => {
-          applyFormatting(...format.markers);
-        });
-      } else if (format.type === "prefix") {
-        btn.addEventListener("click", () => {
-          applyLinePrefix(format.prefix);
-        });
-      }
-    });
-  }
+  previewContainer.append(preview);
+  container.append(previewContainer);
 
   // Set up event listener to update preview on input.
   editor.addEventListener("input", updatePreview);
@@ -249,7 +147,7 @@ function createWhatsAppWysiwyg(containerId, options = {}) {
   // Return an object for external control.
   return {
     getContent: function () {
-      return editor.innerText;
+      return editor.textContent;
     },
     getFormattedContent: function () {
       return preview.innerHTML;
@@ -257,4 +155,107 @@ function createWhatsAppWysiwyg(containerId, options = {}) {
     editorElement: editor,
     previewElement: preview,
   };
+}
+
+// Formatting Functions
+
+// For "wrap" formatting (e.g., bold, italic, code, etc.)
+function applyFormatting(markerStart, markerEnd) {
+  editor.focus();
+  const selection = globalThis.getSelection();
+  if (!selection.rangeCount) return;
+  const range = selection.getRangeAt(0);
+  if (range.collapsed) {
+    handleCollapsedRange(range, markerStart, markerEnd);
+  } else {
+    handleSelectionRange(range, markerStart, markerEnd);
+  }
+  updatePreview();
+}
+
+function handleCollapsedRange(range, start, end) {
+  const textNode = document.createTextNode(start + end);
+  range.insertNode(textNode);
+  range.setStart(textNode, start.length);
+  range.setEnd(textNode, start.length);
+  globalThis.getSelection().removeAllRanges().addRange(range);
+}
+
+function handleSelectionRange(range, start, end) {
+  const content = start + range.toString() + end;
+  document.execCommand("insertText", false, content);
+}
+
+// For "prefix" formatting (e.g., lists, block quotes)
+function applyLinePrefix(prefix) {
+  editor.focus();
+  const selection = globalThis.getSelection();
+  if (!selection.rangeCount) return;
+  const range = selection.getRangeAt(0);
+  if (range.collapsed) {
+    // Simply insert the prefix at the caret.
+    document.execCommand("insertText", false, prefix);
+  } else {
+    // For multi-line selection, add prefix to each line.
+    const selectedText = range.toString();
+    const lines = selectedText.split("\n");
+    const prefixedLines = lines.map((line) => prefix + line);
+    const newText = prefixedLines.join("\n");
+    document.execCommand("insertText", false, newText);
+  }
+  updatePreview();
+}
+
+// Update preview by applying preview rules to the editor's plain text.
+function updatePreview() {
+  const content = editor.textContent;
+  let formattedContent = content;
+  for (const rule of config.previewRules) {
+    formattedContent = formattedContent.replace(rule.regex, rule.replacement);
+  }
+  preview.innerHTML = formattedContent;
+}
+
+// Initialize the toolbar with buttons.
+function initializeToolbar() {
+  toolbar.innerHTML = config.toolbarFormats
+    .map((format) => {
+      if (format.type === "wrap") {
+        return `
+            <button
+              id="btn-${format.id}"
+              class="format-btn"
+              data-start="${format.markers[0]}"
+              data-end="${format.markers[1]}"
+            >
+              ${format.label}
+            </button>
+          `;
+      } else if (format.type === "prefix") {
+        return `
+            <button
+              id="btn-${format.id}"
+              class="format-btn"
+              data-prefix="${format.prefix}"
+            >
+              ${format.label}
+            </button>
+          `;
+      }
+      return "";
+    })
+    .join("");
+  for (const format of config.toolbarFormats) {
+    const button = document.querySelector(`#btn-${format.id}`);
+    if (!button) continue;
+    if (format.type === "wrap") {
+      button.addEventListener("click", () => {
+        applyFormatting(...format.markers);
+      });
+    } else if (format.type === "prefix") {
+      button.addEventListener("click", () => {
+        applyLinePrefix(format.prefix);
+      });
+    }
+  }
 }

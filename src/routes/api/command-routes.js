@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const validateRequestBody = require("../../middlewares/validateRequestBody");
+const validateRequestBody = require("../../middlewares/validate-request-body");
 const {
   getAllCommands,
   createCommand,
   updateCommand,
   deleteCommand,
-} = require("../../controllers/api/commandController");
+} = require("../../controllers/api/command-controller");
 
 // GET /api/command
 router.get("/", getAllCommands);

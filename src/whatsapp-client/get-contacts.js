@@ -5,7 +5,7 @@ const { insertOrReplaceMany } = require("../models/contact");
  * that are not valid users, and inserts them into the contacts table.
  * @param {Client} client - The WhatsApp client instance.
  */
-module.exports = async (client) => {
+module.exports = async function getContacts (client) {
   const allContacts = await client.getContacts();
   const contacts = [];
   if (allContacts) {
@@ -29,3 +29,4 @@ module.exports = async (client) => {
     insertOrReplaceMany(contacts);
   }
 };
+
