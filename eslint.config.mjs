@@ -1,7 +1,7 @@
 import sonarjs from "eslint-plugin-sonarjs";
 import unicorn from "eslint-plugin-unicorn";
 import globals from "globals";
-import noUnboundedPromiseAll from "./lib/rules/no-unbounded-promise-all.js";
+import noUnboundedPromiseAll from "./lib/es-rules/no-unbounded-promise-all.js";
 
 export default [
   {
