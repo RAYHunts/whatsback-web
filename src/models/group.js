@@ -9,6 +9,16 @@ const table = "groups";
  */
 module.exports = {
   /**
+   * Retrieves a single group from the database by its 'groupId'.
+   * @param {string} groupId - The 'groupId' of the group to retrieve.
+   * @returns {Object} The group object, or undefined if not found.
+   */
+  find: (groupId) => {
+    const stmt = database.prepare(`SELECT * FROM ${table} WHERE groupId = ?`);
+    return stmt.get(groupId);
+  },
+
+  /**
    * Counts the total number of groups in the database.
    * @returns {number} The total number of groups.
    */
@@ -84,4 +94,37 @@ module.exports = {
       throw error;
     }
   },
+
+  /**
+   * Upserts multiple groups in the database.
+   * @param {Array<Object>} groups - An array of group objects to upsert.
+   * @param {string} groups[].groupId - The unique ID of the group.
+   * @param {string} groups[].groupName - The name of the group.
+   * @param {number} groups[].totalParticipants - The total number of participants in the group.
+   * @throws {Error} If an error occurs during the database transaction.
+   */
+  upsertMany: (groups) => {
+    const upsert = database.prepare(`
+      INSERT INTO ${table} (groupId, groupName, totalParticipants)
+      VALUES (@groupId, @groupName, @totalParticipants)
+      ON CONFLICT(groupId) DO UPDATE SET
+        groupName = excluded.groupName,
+        totalParticipants = excluded.totalParticipants
+    `);
+  
+    const upsertTransaction = database.transaction((groups) => {
+      for (const group of groups) {
+        upsert.run(group);
+      }
+    });
+  
+    try {
+      upsertTransaction(groups);
+      serverLog(`${groups.length} groups upserted successfully.`);
+    } catch (error) {
+      serverLog("Error upserting groups:", error);
+      throw error;
+    }
+  },
+  
 };
