@@ -54,12 +54,13 @@ Whatsback Provider is a simple WhatsApp provider that offers basic functionality
 
 ### Key Configuration Options
 
-| Environment Variable | Description              | Default               |
-|----------------------|--------------------------|-----------------------|
-| `NODE_ENV`           | Runtime environment      | `production`          |
-| `APP_PORT`           | Application port         | `5001`                |
-| `UI_PORT`            | External exposed port    | `8169`                |
-| `DB_PATH`            | Path to SQLite database  | `/data/database.sqlite` |
+| Environment Variable | Description              | Default                  |
+|----------------------|--------------------------|------------------------- |
+| `NODE_ENV`           | Runtime environment       | `production`            |
+| `APP_PORT`           | Application port          | `5001`                  |
+| `UI_PORT`            | External exposed port     | `8169`                  |
+| `DB_PATH`            | Path to SQLite database   | `/data/database.sqlite` |
+| `TZ`                 | Set your default timezone | `Asia/Jakarta` default `UTC` |
 
 ### Docker Installation
 
