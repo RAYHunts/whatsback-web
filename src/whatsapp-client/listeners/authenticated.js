@@ -1,7 +1,7 @@
 const { sleep, serverLog } = require("../../helper");
-const userInfo = require("../getProfile");
-const getContacts = require("../getContacts");
-const getGroups = require("../getGroups");
+const userInfo = require("../get-profile");
+const getContacts = require("../get-contacts");
+const getGroups = require("../get-groups");
 
 /**
  * Handles the "authenticated" event for the WhatsApp client.
@@ -11,7 +11,11 @@ const getGroups = require("../getGroups");
  * @param {Object} state - The application state object.
  * @returns {Promise<void>}
  */
-module.exports = async (client, connectedSockets, state) => {
+module.exports = async function authenticatedHandler(
+  client,
+  connectedSockets,
+  state
+) {
   serverLog("WhatsApp client is authenticated");
   state.isAuthenticated = true;
 
@@ -21,7 +25,7 @@ module.exports = async (client, connectedSockets, state) => {
   getContacts(client);
   getGroups(client);
 
-  connectedSockets.forEach((socket) => {
+  for (const socket of connectedSockets) {
     socket.emit("authenticated", {
       log: "WhatsApp is authenticated!",
       user_info: {
@@ -29,5 +33,6 @@ module.exports = async (client, connectedSockets, state) => {
         picture: info.picture,
       },
     });
-  });
+  }
 };
+

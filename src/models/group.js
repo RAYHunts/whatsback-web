@@ -1,4 +1,4 @@
-const db = require("../db");
+const database = require("../database");
 const { serverLog } = require("../helper");
 
 const table = "groups";
@@ -9,11 +9,21 @@ const table = "groups";
  */
 module.exports = {
   /**
+   * Retrieves a single group from the database by its 'groupId'.
+   * @param {string} groupId - The 'groupId' of the group to retrieve.
+   * @returns {Object} The group object, or undefined if not found.
+   */
+  find: (groupId) => {
+    const stmt = database.prepare(`SELECT * FROM ${table} WHERE groupId = ?`);
+    return stmt.get(groupId);
+  },
+
+  /**
    * Counts the total number of groups in the database.
    * @returns {number} The total number of groups.
    */
   count: () => {
-    const stmt = db.prepare(`SELECT COUNT(groupId) AS total FROM ${table}`);
+    const stmt = database.prepare(`SELECT COUNT(groupId) AS total FROM ${table}`);
     const result = stmt.get();
     return result.total;
   },
@@ -23,7 +33,7 @@ module.exports = {
    * @returns {Iterator} An iterator for all groups in the database.
    */
   iterate: () => {
-    const stmt = db.prepare(`SELECT * FROM ${table} ORDER BY groupName ASC`);
+    const stmt = database.prepare(`SELECT * FROM ${table} ORDER BY groupName ASC`);
     const iterator = stmt.iterate();
 
     // Convert the iterator to an array
@@ -47,12 +57,12 @@ module.exports = {
 
     if (search) {
       let sql = `SELECT * FROM ${table} WHERE groupName LIKE '%${search}%' ORDER BY groupName ASC LIMIT ? OFFSET ?`;
-      const stmt = db.prepare(sql);
+      const stmt = database.prepare(sql);
       return stmt.all(limit, offset);
     }
 
     let sql = `SELECT * FROM ${table} ORDER BY groupName ASC LIMIT ? OFFSET ?`;
-    const stmt = db.prepare(sql);
+    const stmt = database.prepare(sql);
     return stmt.all(limit, offset);
   },
 
@@ -65,12 +75,12 @@ module.exports = {
    * @throws {Error} If an error occurs during the database transaction.
    */
   insertOrReplaceMany: (groups) => {
-    const insertOrReplace = db.prepare(`
+    const insertOrReplace = database.prepare(`
       INSERT OR REPLACE INTO ${table} (groupId, groupName, totalParticipants)
       VALUES (@groupId, @groupName, @totalParticipants)
     `);
 
-    const insertTransaction = db.transaction((groups) => {
+    const insertTransaction = database.transaction((groups) => {
       for (const group of groups) {
         insertOrReplace.run(group);
       }
@@ -84,4 +94,37 @@ module.exports = {
       throw error;
     }
   },
+
+  /**
+   * Upserts multiple groups in the database.
+   * @param {Array<Object>} groups - An array of group objects to upsert.
+   * @param {string} groups[].groupId - The unique ID of the group.
+   * @param {string} groups[].groupName - The name of the group.
+   * @param {number} groups[].totalParticipants - The total number of participants in the group.
+   * @throws {Error} If an error occurs during the database transaction.
+   */
+  upsertMany: (groups) => {
+    const upsert = database.prepare(`
+      INSERT INTO ${table} (groupId, groupName, totalParticipants)
+      VALUES (@groupId, @groupName, @totalParticipants)
+      ON CONFLICT(groupId) DO UPDATE SET
+        groupName = excluded.groupName,
+        totalParticipants = excluded.totalParticipants
+    `);
+  
+    const upsertTransaction = database.transaction((groups) => {
+      for (const group of groups) {
+        upsert.run(group);
+      }
+    });
+  
+    try {
+      upsertTransaction(groups);
+      serverLog(`${groups.length} groups upserted successfully.`);
+    } catch (error) {
+      serverLog("Error upserting groups:", error);
+      throw error;
+    }
+  },
+  
 };

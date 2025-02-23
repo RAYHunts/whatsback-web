@@ -1,5 +1,6 @@
+<% var pos = position || "bottom-1 left-1" %>
 <div
-  class="fixed bottom-1 left-1 z-50 flex h-8 w-8 items-center justify-center rounded-full bg-gray-800 font-mono text-xs text-white"
+  class="fixed <%= pos %> z-50 flex h-8 w-8 items-center justify-center rounded-full bg-gray-800 dark:bg-white font-mono text-xs text-white dark:text-gray-800"
 >
   <div class="block sm:hidden">xs</div>
   <div class="hidden sm:block md:hidden">sm</div>

@@ -1,4 +1,4 @@
-const db = require("../../db");
+const database = require("../../database");
 const { phoneNumberFormatter } = require("../../helper");
 
 /**
@@ -8,30 +8,41 @@ const { phoneNumberFormatter } = require("../../helper");
  * @param {Client} client - The WhatsApp client instance.
  * @returns {void}
  */
-module.exports = async (msg, client) => {
+module.exports = async function messageHandler(message, client) {
   try {
-    if (msg.body.startsWith("!")) {
-      const stmt = db.prepare(
+    if (message.body.startsWith("!")) {
+      const stmt = database.prepare(
         "SELECT command, response FROM commands WHERE command = ?"
       );
-      const data = stmt.get(msg.body);
+      const data = stmt.get(message.body);
 
-      if (msg.body === data.command) {
-        msg.reply(data.response);
-      } else if (msg.body === "!whois") {
-        msg.reply(`I am ${client.info?.pushname || "unknown"}`);
-      } else if (msg.body === "!whoami") {
-        const contact = await msg.getContact();
-        const contactName = contact.pushname || contact.name || "Unknown";
-        const contactNumber = phoneNumberFormatter(contact.number);
-        client.sendMessage(
-          contactNumber,
-          `Hi! Your name is *${contactName}* and your number is ${contact.number}`
-        );
-      } else {
-        console.warn("Command not found");
-        msg.reply("Command not found!");
+      switch (message.body) {
+        case data.command: {
+          message.reply(data.response);
+
+          break;
+        }
+        case "!whois": {
+          message.reply(`I am ${client.info?.pushname || "unknown"}`);
+
+          break;
+        }
+        case "!whoami": {
+          const contact = await message.getContact();
+          const contactName = contact.pushname || contact.name || "Unknown";
+          const contactNumber = phoneNumberFormatter(contact.number);
+          client.sendMessage(
+            contactNumber,
+            `Hi! Your name is *${contactName}* and your number is ${contact.number}`
+          );
+
+          break;
+        }
+        default: {
+          console.warn("Command not found");
+          message.reply("Command not found!");
+        }
       }
     }
-  } catch (error) {}
+  } catch {}
 };

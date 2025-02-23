@@ -1,14 +1,24 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
+require("dotenv").config();
 
-/**
- * WhatsApp client instance configured with LocalAuth and custom Puppeteer settings.
- * @type {Client}
- */
-const client = new Client({
-  authStrategy: new LocalAuth(),
-  restartOnAuthFail: true,
-  takeoverOnConflict: true,
-  puppeteer: {
+let puppeteerOptions = {
+  headless: true,
+  args: [
+    "--disable-gpu",
+    "--disable-dev-shm-usage",
+    "--disable-setuid-sandbox",
+    "--no-first-run",
+    "--no-sandbox",
+    "--no-zygote",
+    "--deterministic-fetch",
+    "--disable-features=IsolateOrigins",
+    "--disable-site-isolation-trials"
+  ],
+};
+
+if (process.env.NODE_ENV === "production") {
+  puppeteerOptions = {
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
     headless: true,
     args: [
       "--disable-gpu",
@@ -20,8 +30,21 @@ const client = new Client({
       "--deterministic-fetch",
       "--disable-features=IsolateOrigins",
       "--disable-site-isolation-trials",
+      "--single-process",
+      "--user-data-dir=/home/appuser/.chromium"
     ],
-  },
+  };
+}
+
+/**
+ * WhatsApp client instance configured with LocalAuth and custom Puppeteer settings.
+ * @type {Client}
+ */
+const client = new Client({
+  authStrategy: new LocalAuth(),
+  restartOnAuthFail: true,
+  takeoverOnConflict: true,
+  puppeteer: puppeteerOptions,
   qrMaxRetries: 10,
 });
 
@@ -32,22 +55,22 @@ const client = new Client({
 let connectedSockets = [];
 
 // Import event listeners (each is in its own module)
-const readyListener = require("./listeners/ready");
-const authenticatedListener = require("./listeners/authenticated");
-const authFailureListener = require("./listeners/auth_failure");
-const qrListener = require("./listeners/qr");
-const disconnectedListener = require("./listeners/disconnected");
-const messageListener = require("./listeners/message");
+const readyHandler = require("./listeners/ready");
+const authenticatedHandler = require("./listeners/authenticated");
+const authFailureHandler = require("./listeners/auth-failure");
+const qrCodeHandler = require("./listeners/qr");
+const disconnectedHandler = require("./listeners/disconnected");
+const messageHandler = require("./listeners/message");
 
 const state = require("./state");
 
 // Register WhatsApp client event listeners, passing in the client, sockets, and state.
-client.on("ready", () => readyListener(client, connectedSockets, state));
-client.on("authenticated", () => authenticatedListener(client, connectedSockets, state));
-client.on("auth_failure", () => authFailureListener(connectedSockets));
-client.on("qr", (qr) => qrListener(qr, connectedSockets, state));
-client.on("disconnected", (reason) => disconnectedListener(reason, client, connectedSockets));
-client.on("message", (msg) => messageListener(msg, client));
+client.on("ready", () => readyHandler(client, connectedSockets, state));
+client.on("authenticated", () => authenticatedHandler(client, connectedSockets, state));
+client.on("auth_failure", () => authFailureHandler(connectedSockets));
+client.on("qr", (qr) => qrCodeHandler(qr, connectedSockets, state));
+client.on("disconnected", (reason) => disconnectedHandler(reason, client, connectedSockets));
+client.on("message", (message) => messageHandler(message, client));
 
 client.initialize();
 

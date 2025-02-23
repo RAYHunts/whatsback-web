@@ -1,5 +1,5 @@
 > [!CAUTION]
-> WhatsApp Web and whatsapp-web.js are not officially supported by WhatsApp. Use this project at your own risk.
+> **Whatsback Web** and [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) are not officially supported by WhatsApp. Use this project at your own risk.
 
 <p align="center">
   <img src="/public/images/logo-whatsback-banner.png" width="50%" />
@@ -14,47 +14,35 @@
 
 Whatsback Provider is a simple WhatsApp provider that offers basic functionality such as predefined static commands, sending messages to contacts or groups, and listing all contacts. This project leverages the unofficial [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) package to interface with WhatsApp Web.
 
-> [!NOTE]
-> This is my old project and it's already updated and publicly available for everyone.
+> [!IMPORTANT]
+> **It is not guaranteed you will not be blocked by using this method. WhatsApp does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.**
 
 ## Features
 
-- **Predefined Static Commands:**  
-  Quickly execute common commands without the need for manual input.
+- **Predefined Static Commands:**  Quickly execute common commands without the need for manual input.
+- **Send Message to Contact:**  Programmatically send message directly to individual contacts.
+- **Send Message to Group:**  Programmatically send message to the groups.
+- **List All Contacts:**  Retrieve and display a list of all contacts available on the WhatsApp account.
+- **Schedule Message:**  Schedule a message to be sent at a later time.
 
-- **Send Message to Contact:**  
-  Programmatically send message directly to individual contacts.
+## Table of Contents
 
-- **Send Message to Group:**  
-  Programmatically send message to the groups.
-
-- **List All Contacts:**  
-  Retrieve and display a list of all contacts available on the WhatsApp account.
-
-## Technologies
-
-This project is built with:
-
-- [**CORS**](https://github.com/expressjs/cors) – To enable cross‑origin resource sharing.
-- [**EJS**](https://github.com/mde/ejs) – Templating engine.
-- [**Express**](https://github.com/expressjs/express) – Web framework for Node.js.
-- [**Express Rate Limit**](https://github.com/nfriedly/express-rate-limit) – Middleware to prevent request flooding.
-- [**Helmet**](https://github.com/helmetjs/helmet) – Security middleware for setting HTTP headers.
-- [**Node.js**](https://github.com/nodejs/node) – JavaScript runtime environment.
-- [**Socket.io**](https://github.com/socketio/socket.io) – Real‑time communication between server and client.
-- **SQLite** (via [better‑sqlite3](https://github.com/JoshuaWise/better-sqlite3)) – For local database operations.
-- [**whatsapp‑web.js**](https://github.com/pedroslopez/whatsapp-web.js) – Unofficial WhatsApp Web API library.
-
----
-
-### Other Dependencies
-
-- [**dotenv**](https://github.com/motdotla/dotenv) – Loads environment variables from a `.env` file.
-- [**express‑ejs‑layouts**](https://github.com/soarez/express-ejs-layouts) – Layout support for Express with EJS.
-- [**hpp**](https://github.com/analog-nico/hpp) – HTTP Parameter Pollution protection middleware.
-- [**nodemon**](https://github.com/remy/nodemon) – Monitors for changes in your Node.js application and restarts the server.
-- [**patch‑package**](https://github.com/ds300/patch-package) – Keep a record of modifications to npm packages.
-- [**qrcode**](https://github.com/soldair/node-qrcode) – Generate QR codes for your application.
+- [⚠️ Caution](#️-caution)
+- [✨ Features](#-features)
+- [🚀 Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Key Configuration Options](#key-configuration-options)
+- [🐳 Docker Installation](#-docker-installation)
+  - [Docker CLI](#docker-cli)
+  - [docker-compose.yml](#docker-composeyml)
+- [💻 Source Installation](#-source-installation)
+- [🏃 Running the Project](#-running-the-project)
+- [🔌 Available REST API](#-available-rest-api)
+- [🔒 Security Considerations](#-security-considerations)
+- [🤝 Contributing](#-contributing)
+- [💖 Donate or Sponsoring](#-donate-or-sponsoring)
+- [📢 Disclaimer](#-disclaimer)
+- [📄 License](#-license)
 
 ## Getting Started
 
@@ -62,73 +50,121 @@ This project is built with:
 
 - Node.js (v20 or later recommended)
 - npm (comes with Node.js)
-- A valid WhatsApp account for testing
+- A valid WhatsApp account
+
+### Key Configuration Options
+
+| Environment Variable | Description              | Default               |
+|----------------------|--------------------------|-----------------------|
+| `NODE_ENV`           | Runtime environment      | `production`          |
+| `APP_PORT`           | Application port         | `5001`                |
+| `UI_PORT`            | External exposed port    | `8169`                |
+| `DB_PATH`            | Path to SQLite database  | `/data/database.sqlite` |
 
 ### Docker Installation
 
-### Docker CLI
+#### Docker CLI
 
 1. **Pull the image:**
 
    ```bash
-   docker pull ghcr.io/darkterminal/whatsback-web:<version-tag>
+   docker pull ghcr.io/darkterminal/whatsback-web:latest
    ```
 
-2. **Run a container:**
+2. **Create Network**
 
-   ```bash
-   docker run -d \
-     -p 8169:5001 \ # Web GUI
-     --env NODE_ENV=production \
-     --env APP_PORT=5001 \ # APP AND API
-     ghcr.io/darkterminal/whatsback-web:<version-tag>
-   ```
+  ```bash
+  docker network create whatsback-net
+  ```
 
-### docker-compose.yml
+3. **Create Volume**
+
+  ```bash
+  docker volume create whatsback-db
+  ```
+
+4. **Run Whatsback Application Container**
+
+  ```bash
+  docker run -d \
+    --name whatsback-app-provider \
+    --network whatsback-net \
+    -p 8169:5001 \
+    -e NODE_ENV=production \
+    -e APP_PORT=5001 \
+    -e DB_PATH=/data/database.sqlite \
+    -v whatsback-db:/data \
+    ghcr.io/darkterminal/whatsback-web:latest
+  ```
+
+5. **Run Whatsback Cronjob Container**
+
+  ```bash
+  docker run -d \
+    --name whatsback-app-cronjob \
+    --network whatsback-net \
+    -e NODE_ENV=production \
+    -e APP_HOST=whatsback-app-provider \
+    -e DB_PATH=/data/database.sqlite \
+    -v whatsback-db:/data \
+    your-dockerhub-username/whatsback-app:latest \
+    sh -c "./wait-for whatsback-app-provider:5001 -t 120 -- node cronjob.js"
+  ```
+
+#### docker-compose.yml
 
 ```yaml
 services:
   app:
-    image: ghcr.io/darkterminal/whatsback-web:<version-tag>
+    image: ghcr.io/darkterminal/whatsback-web:latest
+    container_name: whatsback-app-provider
     ports:
       - "${UI_PORT:-8169}:5001"
     environment:
-      NODE_ENV: production
-      APP_PORT: ${APP_PORT:-5001}
+      - NODE_ENV=production
+      - APP_PORT=${APP_PORT:-5001}
+      - DB_PATH=/data/database.sqlite
+    volumes:
+      - db-data:/data
     networks:
       - app_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:$$APP_PORT/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  cronjob:
+    image: ghcr.io/darkterminal/whatsback-web:latest
+    container_name: whatsback-app-cronjob
+    environment:
+      - NODE_ENV=production
+      - APP_HOST=app
+      - DB_PATH=/data/database.sqlite
+    volumes:
+      - db-data:/data
+    command: sh -c "./wait-for app:5001 -t 120 -- node cronjob.js"
+    networks:
+      - app_net
+    depends_on:
+      app:
+        condition: service_healthy
 
 networks:
   app_net:
     driver: bridge
+
+volumes:
+  db-data:
 ```
 
-Replace the `<version-tag>` placeholder with the latest release version from [Package Registry](https://github.com/darkterminal/whatsback-web/pkgs/container/whatsback-web)
+### Source Installation
 
-### Installation
-
-1. **Clone the repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/whatsback-provider.git
-   cd whatsback-provider
-   ```
-
-2. **Install dependencies:**
-
-   ```bash
-   npm install
-   ```
-3. **Configure Environment Variables:**
-
-   Create a `.env` file in the project root with necessary configuration variables. For example:
-
-   ```env
-    APP_PORT=5001 # default app port
-    UI_PORT=8169 # default ui port
-
-    API_CORS_ORIGIN="https://example.com,http://another-example.com"
-   ```
+```bash
+git clone https://github.com/darkterminal/whatsback-web.git
+cd whatsback-web
+npm install
+```
    
 ### Running the Project
 
@@ -148,44 +184,22 @@ Your server should start on the port defined in the `.env` file (default is 5001
 
 ## Available REST API
 
-1. **Sending Message to Contact**
-
-  ```
-  POST http://<YOUR_URL>:<APP_PORT>/api/send-message
-  Content-Type: application/json
-
-  {
-      "number": "08123456789",
-      "message": "Hi, I am using Whatsback Web!"
-  }
-  ```
-  > [!NOTE]
-  > For Indonesian Phone Number you can use `0` prefix or prefixed with country code `62`. For other phone number it should use country code.
-
-2. **Sending Message to Group**
-
-  ```
-  POST http://<YOUR_URL>:<APP_PORT>/api/send-group-message
-  Content-Type: application/json
-
-  {
-      "groupId": "123456789@g.us",
-      "message": "Hi, I am using Whatsback Web!"
-  }
-  ```
-  > [!TIP]
-  > You can get the `groupId` from Whatsback GUI/UI at **Send a Group Message** page. Select **Send a Group Message** from navigation menu > Click **Select Group** button > Select The Group.
+You can read the REST API documentation [here](docs/WHATSBACK-API.md)
 
 ## Security Considerations
 
 - This project uses middleware like Helmet, express-rate-limit, and hpp to help protect against common web vulnerabilities.
 - Be aware that using an unofficial API (whatsapp-web.js) can carry risks with regard to WhatsApp's terms of service.
+- Whatsback Web and whatsapp-web.js are not officially supported by WhatsApp. Use this project at your own risk.
+- It is not guaranteed you will not be blocked by using this method. WhatsApp does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.
 
 ## Contributing
 
 Contributions are welcome! Please open issues or pull requests to improve the project.
 
 ## Donate or Sponsoring
+
+You can support the maintainer of this project through the button and links below:
 
 <a href="https://github.com/sponsors/darkterminal">
   <picture>
@@ -195,6 +209,27 @@ Contributions are welcome! Please open issues or pull requests to improve the pr
   </picture>
 </a>
 
+- [Support via GitHub Sponsors](https://github.com/sponsors/darkterminal)
+- [Support via Saweria](https://saweria.co/darkterminal)
+
+## Disclaimer
+
+This project is not affiliated, associated, authorized, endorsed by, or in any way officially connected with WhatsApp or any of its subsidiaries or its affiliates. The official WhatsApp website can be found at [whatsapp.com](https://whatsapp.com). "WhatsApp" as well as related names, marks, emblems and images are registered trademarks of their respective owners. Also it is not guaranteed you will not be blocked by using this method. WhatsApp does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.
+
 ## License
 
-[MIT License](LICENSE)
+```
+Copyright 2025 Imam Ali Mustofa
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```

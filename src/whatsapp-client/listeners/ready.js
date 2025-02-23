@@ -1,5 +1,5 @@
 const { serverLog } = require("../../helper");
-const userInfo = require("../getProfile");
+const userInfo = require("../get-profile");
 
 /**
  * Handles the "ready" event for the WhatsApp client.
@@ -9,13 +9,13 @@ const userInfo = require("../getProfile");
  * @param {Object} state - The application state object.
  * @returns {void}
  */
-module.exports = async (client, connectedSockets, state) => {
+module.exports = async function readyHandler(client, connectedSockets, state) {
   serverLog("WhatsApp client is ready");
   state.isReady = true;
 
   const info = await userInfo(client);
 
-  connectedSockets.forEach((socket) => {
+  for (const socket of connectedSockets) {
     socket.emit("ready", {
       log: "WhatsApp is ready!",
       user_info: {
@@ -24,5 +24,6 @@ module.exports = async (client, connectedSockets, state) => {
       },
     });
     socket.emit("logs", "WhatsApp is ready!");
-  });
+  }
 };
+
