@@ -1,34 +1,49 @@
-const { phoneNumberFormatter } = require("../../helper");
+const {
+  phoneNumberFormatter,
+  calculateTypingDuration,
+} = require("../../helper");
+const { recordMessageHistory } = require("../../models/message_history");
 const { client } = require("../../whatsapp-client");
 
 /**
- * @api {post} /send-message Send message to user
- * @apiName sendMessageToUser
- * @apiGroup WhatsApp API
+ * Simulates typing indication in a chat for a specified duration.
  *
- * @apiParam {string} number Recipient phone number
- * @apiParam {string} message Message text to send
+ * @param {string} phoneNumber - The phone number of the chat where the typing state is to be set.
+ * @param {string} message - The message content used to calculate the typing duration.
+ */
+
+async function typingMessage(phoneNumber, message) {
+  const typingDuration = calculateTypingDuration(message);
+
+  const chat = await client.getChatById(phoneNumber);
+  await chat.sendStateTyping();
+
+  await new Promise((resolve) => setTimeout(resolve, typingDuration));
+
+  await chat.clearState();
+}
+
+/**
+ * Sends a direct message to a specified WhatsApp user.
  *
- * @apiSuccess {boolean} status Success status
- * @apiSuccess {string} message Success message
+ * @param {object} req - The HTTP request object.
+ * @param {object} res - The HTTP response object.
  *
- * @apiError {boolean} status Error status
- * @apiError {string} message Error message
+ * @prop {string} req.body.number - The recipient's phone number.
+ * @prop {string} req.body.message - The text message to send.
  *
- * @apiExample {curl} Example usage:
- *     curl -X POST \
- *     http://localhost:5001/api/send-message \
- *     -H 'Content-Type: application/json' \
- *     -d '{"number": "+628123456789", "message": "Hello from WhatsApp"}'
- *
- * @apiSampleRequest off
+ * @returns {Promise<void>} - A promise that resolves if the message is sent successfully.
  */
 const sendMessageToUser = async (req, res) => {
   try {
     const { number, message } = req.body;
 
     const phoneNumber = phoneNumberFormatter(number);
+
+    await typingMessage(phoneNumber, message);
+
     await client.sendMessage(phoneNumber, message);
+    recordMessageHistory(phoneNumber, message, "DIRECT_MESSAGE");
 
     res.status(200).json({
       status: true,
@@ -45,35 +60,14 @@ const sendMessageToUser = async (req, res) => {
 /**
  * Sends a message to a specified WhatsApp group.
  *
- * @param {Object} req - The request object containing the groupId and message.
- * @param {Object} res - The response object used to send the result of the operation.
- * 
- * @api {post} /send-group-message Send message to group
- * @apiName sendMessageToGroup
- * @apiGroup WhatsApp API
+ * @param {object} req - The HTTP request object.
+ * @param {object} res - The HTTP response object.
  *
- * @apiParam {string} groupId Group ID to which the message is sent.
- * @apiParam {string} message Message text to send.
+ * @prop {string} req.body.groupId - The WhatsApp group ID (must end with '@g.us').
+ * @prop {string} req.body.message - The text message to send.
  *
- * @apiSuccess {boolean} status Success status.
- * @apiSuccess {string} message Success message indicating the message was sent.
- *
- * @apiError {boolean} status Error status.
- * @apiError {string} message Error message describing the failure.
- *
- * @apiExample {curl} Example usage:
- *     curl -X POST \
- *     http://localhost:5001/api/send-group-message \
- *     -H 'Content-Type: application/json' \
- *     -d '{"groupId": "<group-id>@g.us", "message": "Hello Group"}'
- *
- * Validates the groupId to ensure it ends with "@g.us".
- * Logs an error if the validation fails and returns a 422 status code.
- * Sends the message using the WhatsApp client.
- * Returns a 200 status code upon successful sending.
- * Handles errors and sends a 500 status code with an error message.
+ * @returns {Promise<void>} - A promise that resolves if the message is sent successfully.
  */
-
 const sendMessageToGroup = async (req, res) => {
   try {
     const { groupId, message } = req.body;
@@ -86,7 +80,10 @@ const sendMessageToGroup = async (req, res) => {
       serverLog("Invalid group ID. Group IDs must end with '@g.us'.");
     }
 
+    await typingMessage(groupId, message);
+
     await client.sendMessage(groupId, message);
+    recordMessageHistory(groupId, message, "GROUP_MESSAGE");
 
     res.status(200).json({
       status: true,
