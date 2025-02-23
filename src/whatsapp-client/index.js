@@ -1,14 +1,24 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
+require("dotenv").config();
 
-/**
- * WhatsApp client instance configured with LocalAuth and custom Puppeteer settings.
- * @type {Client}
- */
-const client = new Client({
-  authStrategy: new LocalAuth(),
-  restartOnAuthFail: true,
-  takeoverOnConflict: true,
-  puppeteer: {
+let puppeteerOptions = {
+  headless: true,
+  args: [
+    "--disable-gpu",
+    "--disable-dev-shm-usage",
+    "--disable-setuid-sandbox",
+    "--no-first-run",
+    "--no-sandbox",
+    "--no-zygote",
+    "--deterministic-fetch",
+    "--disable-features=IsolateOrigins",
+    "--disable-site-isolation-trials"
+  ],
+};
+
+if (process.env.NODE_ENV === "production") {
+  puppeteerOptions = {
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
     headless: true,
     args: [
       "--disable-gpu",
@@ -20,8 +30,21 @@ const client = new Client({
       "--deterministic-fetch",
       "--disable-features=IsolateOrigins",
       "--disable-site-isolation-trials",
+      "--single-process",
+      "--user-data-dir=/home/appuser/.chromium"
     ],
-  },
+  };
+}
+
+/**
+ * WhatsApp client instance configured with LocalAuth and custom Puppeteer settings.
+ * @type {Client}
+ */
+const client = new Client({
+  authStrategy: new LocalAuth(),
+  restartOnAuthFail: true,
+  takeoverOnConflict: true,
+  puppeteer: puppeteerOptions,
   qrMaxRetries: 10,
 });
 

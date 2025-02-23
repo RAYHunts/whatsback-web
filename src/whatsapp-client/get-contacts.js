@@ -1,11 +1,13 @@
-const { insertOrReplaceMany } = require("../models/contact");
+const { socketEmit } = require("../../lib/socket-instance");
+const { upsertMany } = require("../models/contact");
 
 /**
  * Fetches all contacts from the WhatsApp client, filters out contacts
  * that are not valid users, and inserts them into the contacts table.
  * @param {Client} client - The WhatsApp client instance.
  */
-module.exports = async function getContacts (client) {
+module.exports = async function getContacts(client) {
+  socketEmit("logs", "Sync your contacts...");
   const allContacts = await client.getContacts();
   const contacts = [];
   if (allContacts) {
@@ -26,7 +28,7 @@ module.exports = async function getContacts (client) {
       }
     }
 
-    insertOrReplaceMany(contacts);
+    upsertMany(contacts);
   }
+  socketEmit("logs", "Synced your contacts!");
 };
-

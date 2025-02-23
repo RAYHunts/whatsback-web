@@ -1,4 +1,4 @@
-const { insertOrReplaceMany } = require("../models/group");
+const { upsertMany } = require("../models/group");
 
 /**
  * Retrieves all group chats from the WhatsApp client, transforms them into group objects,
@@ -18,6 +18,6 @@ module.exports = async function getGroups(client) {
     totalParticipants: group.participants.length,
   }));
 
-  insertOrReplaceMany(groups);
+  upsertMany(groups);
 };
 
