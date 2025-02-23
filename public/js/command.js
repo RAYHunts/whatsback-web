@@ -1,284 +1,223 @@
-const modal = document.querySelector("#modal");
-const modalTitle = document.querySelector("#modalTitle");
-const modalContent = document.querySelector("#modalContent");
-const modalForm = document.querySelector("#modalForm");
-const commandInput = document.querySelector("#command");
-const responseInput = document.querySelector("#response");
-const cancelButton = document.querySelector("#cancelButton");
+const btnAddCommand = document.querySelector("#btn-add-command");
+const btnCloseCommand = document.querySelector("#btn-close-command");
+const btnCancelCommand = document.querySelector("#btn-cancel-command");
+const btnConfirmDeleteCommand = document.querySelector(
+  "#btn-confirm-delete-command"
+);
+let currentCommandId = null;
 
-// Function to open the modal with a specific title and command data
-const openModal = (title, cmd) => {
-  modalTitle.textContent = title;
-  commandInput.value = cmd ? cmd.command : "";
-  responseInput.value = cmd ? cmd.response : "";
-  modal.classList.add("flex");
+function openModalCommand(command, type) {
+  const modal = document.querySelector("#commandModal");
+  if (command && type === "edit") {
+    document.querySelector("#modalTitle").textContent = "Edit Command";
+    document.querySelector("#commandId").value = command.id?.trim();
+    document.querySelector("#commandName").value = command.name?.trim();
+    document.querySelector("#commandResponse").value = command.response?.trim();
+    document.querySelector("#form_action").value = type;
+  } else {
+    document.querySelector("#modalTitle").textContent = "Add New Command";
+    document.querySelector("#commandId").value = "";
+    document.querySelector("#commandName").value = "";
+    document.querySelector("#commandResponse").value = "";
+    document.querySelector("#form_action").value = "";
+  }
   modal.classList.remove("hidden");
-  setTimeout(() => {
-    modal.classList.remove("opacity-0");
-    modalContent.classList.remove("scale-95");
-    modalContent.classList.add("scale-100");
-  }, 10);
-};
-
-// Add Command Button
-document.querySelector("#addCommandButton").addEventListener("click", () => {
-  openModal("Add New Command");
-});
-
-// Edit Command Buttons
-for (const button of document.querySelectorAll(".editCommandButton")) {
-  button.addEventListener("click", (event) => {
-    const cmd = JSON.parse(event.target.dataset.cmd);
-
-    document.querySelector("#command_id").value = cmd.id;
-    document.querySelector("#form_action").value = "edit";
-
-    openModal("Edit Command", cmd);
-
-    commandInput.parentElement.classList.remove("hidden");
-    responseInput.parentElement.classList.remove("hidden");
-  });
 }
 
-// Delete Command Buttons
-for (const button of document.querySelectorAll(".deleteCommandButton")) {
-  button.addEventListener("click", (event) => {
-    const cmd = JSON.parse(event.target.dataset.cmd);
-
-    document.querySelector("#command_id").value = cmd.id;
-    document.querySelector("#form_action").value = "delete";
-
-    openModal(`Did you want to delete "${cmd.command}" command?`, cmd);
-
-    commandInput.parentElement.classList.add("hidden");
-    responseInput.parentElement.classList.add("hidden");
-  });
+function closeModalCommand() {
+  document.querySelector("#form_action").value = "add";
+  document.querySelector("#commandModal").classList.add("hidden");
 }
 
-// Cancel Button
-cancelButton.addEventListener("click", () => {
-  modal.classList.add("opacity-0");
-  modalContent.classList.remove("scale-100");
-  modalContent.classList.add("scale-95");
+function openDeleteModalCommand(commandId) {
+  currentCommandId = commandId;
+  document.querySelector("#form_action").value = "delete";
+  document.querySelector("#deleteModal").classList.remove("hidden");
+}
 
-  setTimeout(function () {
-    modal.classList.remove("flex");
-    modal.classList.add("hidden");
-  }, 300);
-});
+function closeDeleteModalCommand() {
+  document.querySelector("#deleteModal").classList.add("hidden");
+}
 
-// Create function to load the new created command after submit
-async function loadNewCommand() {
+function cancelDeleteModalCommand() {
+  document.querySelector("#form_action").value = "add";
+  document.querySelector("#deleteModal").classList.add("hidden");
+}
+
+async function confirmDelete(event) {
+  event.preventDefault();
+
+  const response = await fetch(
+    `${SAFE_API_URL}/api/command/${currentCommandId}`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  const result = await response.json();
+
+  if (result.status) {
+    createToast("info", "Success!", result.message);
+    setTimeout(() => {
+      loadNewCommands();
+    }, 1000);
+  } else {
+    createToast("warning", "Failed!", result.message);
+  }
+  closeDeleteModalCommand();
+}
+
+async function loadNewCommands() {
   try {
     // Fetch the updated list of commands from the server
     const response = await fetch(`${SAFE_API_URL}/api/command`);
-    const commands = await response.json();
+    const result = await response.json();
 
-    // Get the table body element
-    const tableBody = document.querySelector("tbody");
+    const data = result.data || result;
 
-    // Clear the existing table rows
-    tableBody.innerHTML = "";
+    // Get the table body element by its ID
+    const tbody = document.querySelector("#commandsTableBody");
+    // Clear existing rows
+    tbody.innerHTML = "";
 
-    const commandData = commands.data || commands;
+    // Iterate over the commands and create table rows
+    data.commands.forEach((cmd, index) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+          <td class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">${cmd.id}</td>
+          <td class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">${cmd.command}</td>
+          <td class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">${cmd.response}</td>
+          <td class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <button class="text-blue-600 mr-2 px-2 py-1 hover:bg-blue-600 hover:text-white rounded-md edit-btn">
+              <i class="fas fa-pen-to-square"></i>
+            </button>
+            <button class="text-red-600 px-2 py-1 hover:bg-red-600 hover:text-white rounded-md delete-btn">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
+      tbody.appendChild(tr);
+    });
 
-    // Append the new rows with the updated list of commands
-    for (const cmd of commandData.commands) {
-      const row = document.createElement("tr");
-      row.classList.add(
-        "hover:bg-gray-50",
-        "dark:hover:bg-gray-700",
-        "transition-colors"
-      );
-
-      const commandCell = document.createElement("td");
-      commandCell.classList.add(
-        "px-4",
-        "py-2",
-        "text-sm",
-        "text-gray-900",
-        "dark:text-gray-200"
-      );
-      commandCell.textContent = cmd.command;
-
-      const responseCell = document.createElement("td");
-      responseCell.classList.add(
-        "px-4",
-        "py-2",
-        "text-sm",
-        "text-gray-900",
-        "dark:text-gray-200"
-      );
-      responseCell.textContent = cmd.response;
-
-      const actionsCell = document.createElement("td");
-      actionsCell.classList.add("px-4", "py-2", "text-sm", "flex", "space-x-2");
-
-      const editButton = document.createElement("button");
-      editButton.classList.add(
-        "editCommandButton",
-        "px-2",
-        "py-1",
-        "rounded",
-        "text-white",
-        "bg-blue-600",
-        "hover:bg-blue-900",
-        "dark:bg-blue-500",
-        "dark:hover:bg-blue-700"
-      );
-      editButton.textContent = "Edit";
-      editButton.dataset.cmd = JSON.stringify(cmd);
-
-      const deleteButton = document.createElement("button");
-      deleteButton.classList.add(
-        "deleteCommandButton",
-        "px-2",
-        "py-1",
-        "rounded",
-        "text-white",
-        "bg-red-600",
-        "hover:bg-red-900",
-        "dark:bg-red-500",
-        "dark:hover:bg-red-700"
-      );
-      deleteButton.textContent = "Delete";
-      deleteButton.dataset.cmd = JSON.stringify(cmd);
-
-      actionsCell.append(editButton);
-      actionsCell.append(deleteButton);
-
-      row.append(commandCell);
-      row.append(responseCell);
-      row.append(actionsCell);
-
-      tableBody.append(row);
-    }
-
-    // Re-attach event listeners to the new edit and delete buttons
-    for (const button of document.querySelectorAll(".editCommandButton")) {
-      button.addEventListener("click", (event) => {
-        const cmd = JSON.parse(event.target.dataset.cmd);
-
-        document.querySelector("#command_id").value = cmd.id;
-        document.querySelector("#form_action").value = "edit";
-
-        openModal("Edit Command", cmd);
-
-        commandInput.parentElement.classList.remove("hidden");
-        responseInput.parentElement.classList.remove("hidden");
+    document.querySelectorAll(".edit-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const row = btn.closest("tr");
+        const command = {
+          id: row.cells[0].textContent.trim(),
+          name: row.cells[1].textContent.trim(),
+          response: row.cells[2].textContent.trim(),
+        };
+        openModalCommand(command, "edit");
       });
-    }
+    });
 
-    for (const button of document.querySelectorAll(".deleteCommandButton")) {
-      button.addEventListener("click", (event) => {
-        const cmd = JSON.parse(event.target.dataset.cmd);
-
-        document.querySelector("#command_id").value = cmd.id;
-        document.querySelector("#form_action").value = "delete";
-
-        openModal(`Did you want to delete "${cmd.command}" command?`, cmd);
-
-        commandInput.parentElement.classList.add("hidden");
-        responseInput.parentElement.classList.add("hidden");
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const commandId = btn.closest("tr").cells[0].textContent.trim();
+        openDeleteModalCommand(commandId);
       });
-    }
+    });
   } catch (error) {
-    console.error("Error loading new command:", error);
-    createToast("warning", "Failed!", "Error loading new command.");
+    console.error("Error loading commands:", error);
   }
 }
 
-// Form Submission
-modalForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
+// Commands Page
+btnAddCommand?.addEventListener("click", () =>
+  openModalCommand(currentCommandId, "add")
+);
+btnCloseCommand?.addEventListener("click", closeModalCommand);
+btnCancelCommand?.addEventListener("click", cancelDeleteModalCommand);
+btnConfirmDeleteCommand?.addEventListener("click", confirmDelete);
 
-  const formData = new FormData(event.target);
-  const data = Object.fromEntries(formData.entries());
+document
+  .querySelector("#commandForm")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  switch (data.action) {
-  case "add": {
-    const response = await fetch(`${SAFE_API_URL}/api/command`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        command: data.command,
-        response: data.response,
-      }),
-    });
+    const formData = new FormData(event.target);
+    const collected = Object.fromEntries(formData.entries());
+    const data = {
+      command_id: collected.commandId,
+      command: collected.commandName,
+      response: collected.commandResponse,
+      action: collected.action,
+    };
 
-    const result = await response.json();
+    switch (data.action) {
+      case "add": {
+        const response = await fetch(`${SAFE_API_URL}/api/command`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            command: data.command,
+            response: data.response,
+          }),
+        });
 
-    if (result.status) {
-      createToast("info", "Success!", result.message);
-      setTimeout(() => {
-        loadNewCommand();
-      }, 3000);
-    } else {
-      createToast("warning", "Failed!", result.message);
-    }
-  
-  break;
-  }
-  case "edit": {
-    const response = await fetch(
-      `${SAFE_API_URL}/api/command/${data.command_id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          command: data.command,
-          response: data.response,
-        }),
+        const result = await response.json();
+
+        if (result.status) {
+          createToast("info", "Success!", result.message);
+          setTimeout(() => {
+            loadNewCommands();
+          }, 1000);
+        } else {
+          createToast("warning", "Failed!", result.message);
+        }
+
+        break;
       }
-    );
+      case "edit": {
+        const response = await fetch(
+          `${SAFE_API_URL}/api/command/${data.command_id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              command: data.command,
+              response: data.response,
+            }),
+          }
+        );
 
-    const result = await response.json();
+        const result = await response.json();
 
-    if (result.status) {
-      createToast("info", "Success!", result.message);
-      setTimeout(() => {
-        loadNewCommand();
-      }, 3000);
-    } else {
-      createToast("warning", "Failed!", result.message);
-    }
-  
-  break;
-  }
-  case "delete": {
-    const response = await fetch(
-      `${SAFE_API_URL}/api/command/${data.command_id}`,
-      {
-        method: "DELETE",
+        if (result.status) {
+          createToast("info", "Success!", result.message);
+          setTimeout(() => {
+            loadNewCommands();
+          }, 1000);
+        } else {
+          createToast("warning", "Failed!", result.message);
+        }
+
+        break;
       }
-    );
-
-    const result = await response.json();
-
-    if (result.status) {
-      createToast("info", "Success!", result.message);
-      setTimeout(() => {
-        loadNewCommand();
-      }, 3000);
-    } else {
-      createToast("warning", "Failed!", result.message);
     }
-  
-  break;
-  }
-  // No default
-  }
 
-  modal.classList.add("opacity-0");
-  modalContent.classList.remove("scale-100");
-  modalContent.classList.add("scale-95");
+    setTimeout(closeModalCommand, 300);
+  });
 
-  setTimeout(function () {
-    modal.classList.remove("flex");
-    modal.classList.add("hidden");
-  }, 300);
+document.querySelectorAll(".edit-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const row = btn.closest("tr");
+    const command = {
+      id: row.cells[0].textContent,
+      name: row.cells[1].textContent,
+      response: row.cells[2].textContent,
+    };
+    openModalCommand(command, "edit");
+  });
+});
+
+document.querySelectorAll(".delete-btn")?.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const commandId = btn.closest("tr").cells[0].textContent;
+    openDeleteModalCommand(commandId);
+  });
 });
