@@ -1,24 +1,40 @@
-<div
-  class="flex flex-col space-y-4 bg-white dark:bg-gray-800 p-2 rounded-md shadow-md"
->
-  <div class="flex justify-between items-center">
-    <h1 class="text-lg font-bold mb-4 text-black dark:text-white">Contacts</h1>
-    <h1 class="text-lg font-bold mb-4 text-black dark:text-white font-mono">Total Contacts: <%= totalContacts %></h1>
-  </div>
-  <input
-    type="text"
-    id="searchContact"
-    class="border p-2 rounded w-full mb-2"
-    placeholder="Search contact"
-  />
+<div class="p-6">
+  <h1 class="text-2xl font-bold mb-6 dark:text-white">
+    Contacts Manager
+  </h1>
 
-  <div
-    id="contactContainer"
-    class="max-h-60 overflow-y-auto border p-2 rounded bg-white"
-  >
-    <ul id="contactList" class="space-y-2"></ul>
-    <p id="loadingText" class="text-gray-500 text-center hidden">Loading...</p>
+  <!-- Search Bar -->
+  <div class="mb-6">
+    <input type="text" id="globalSearch" placeholder="Search all contacts..." class="w-full px-4 py-2 border rounded-lg dark:bg-zinc-700 dark:border-zinc-600 dark:text-white" />
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Individual Contacts Column -->
+    <div class="bg-gray-50 dark:bg-zinc-700 rounded-lg p-4">
+      <h2 class="text-lg font-semibold mb-4 dark:text-white">Individual Contacts</h2>
+      <div class="mb-4">
+        <input type="text" id="contactSearch" placeholder="Search contacts..." class="w-full px-4 py-2 border rounded-lg dark:bg-zinc-600 dark:border-zinc-500 dark:text-white" />
+      </div>
+      <div class="max-h-[60vh] overflow-y-auto">
+        <!-- Added scroll container -->
+        <ul id="contactsList" class="space-y-2"></ul>
+      </div>
+    </div>
+
+    <!-- Group Contacts Column -->
+    <div class="bg-gray-50 dark:bg-zinc-700 rounded-lg p-4">
+      <h2 class="text-lg font-semibold mb-4 dark:text-white">Group Contacts</h2>
+      <div class="mb-4">
+        <input type="text" id="groupSearch" placeholder="Search groups..." class="w-full px-4 py-2 border rounded-lg dark:bg-zinc-600 dark:border-zinc-500 dark:text-white" />
+      </div>
+      <div class="max-h-[60vh] overflow-y-auto">
+        <!-- Added scroll container -->
+        <ul id="groupsList" class="space-y-2"></ul>
+      </div>
+    </div>
   </div>
 </div>
 
+<%- include('components/modals/contact/send-message-modal') %>
+<%- include('components/modals/contact/send-group-message-modal') %>
 <script src="/js/contact.js"></script>
