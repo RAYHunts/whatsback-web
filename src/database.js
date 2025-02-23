@@ -1,7 +1,13 @@
 const Database = require("better-sqlite3");
+require("dotenv").config();
 
-const database = new Database("whatsback.db", {
-  busyTimeout: 7000, // Wait up to 7 seconds for the database to be available
+const dbPath =
+  process.env.NODE_ENV === "production"
+    ? process.env.DB_PATH
+    : "./whatsback.db";
+
+const database = new Database(dbPath, {
+  busyTimeout: 7000,
 });
 database.pragma("journal_mode = WAL");
 
