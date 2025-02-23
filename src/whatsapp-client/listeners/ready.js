@@ -1,5 +1,5 @@
 const { serverLog } = require("../../helper");
-const userInfo = require("../getProfile");
+const userInfo = require("../get-profile");
 
 /**
  * Handles the "ready" event for the WhatsApp client.
