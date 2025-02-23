@@ -1,52 +1,52 @@
 const database = require("./src/database");
 const cron = require("node-cron");
-const { client } = require("./src/whatsapp-client");
 const { serverLog } = require("./src/helper");
+require("dotenv").config();
 
-// Create tables if they don't exist
-database
-  .prepare(
-    `
-  CREATE TABLE IF NOT EXISTS jobs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    job_name TEXT,
-    job_trigger TEXT,
-    target_contact_or_group TEXT,
-    message TEXT,
-    job_cron_expression TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME,
-    deleted_at DATETIME
-  )
-`
-  )
-  .run();
-
-database
-  .prepare(
-    `
-  CREATE TABLE IF NOT EXISTS job_histories (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    job_name TEXT,
-    job_execute_time DATETIME,
-    job_complete_time DATETIME,
-    job_error_message TEXT
-  )
-`
-  )
-  .run();
+const APP_HOST =
+  process.env.NODE_ENV === "production"
+    ? process.env.APP_HOST || "app"
+    : "localhost";
+const APP_PORT = process.env.APP_PORT || 5001;
+const APP_URL = `http://${APP_HOST}:${APP_PORT}`;
 
 // In-memory map to keep track of scheduled jobs
 const scheduledJobs = new Map();
 
+function getDetailContact(job) {
+  const detail = job.target_contact_or_group.split("|");
+  const name = detail[0];
+  const number = detail[1];
+
+  return [name, number];
+}
+
 // Example functions for different job triggers
-function sendMessage(job) {
+async function sendMessage(job) {
+  const [name, number] = getDetailContact(job);
+  const response = await fetch(`${APP_URL}/api/message/send-message`, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      "WHATSBACK-SOURCE": "cronjob",
+    },
+    body: JSON.stringify({
+      number,
+      message: job.message,
+    }),
+  });
+  const result = await response.json();
+  if (result.status) {
+    serverLog(`send_message: Sending "${job.message}" to ${name} ${number}`);
+    return;
+  }
+
   serverLog(
-    `send_message: Sending "${job.message}" to ${job.target_contact_or_group}`
+    `send_message: Failed to send "${job.message}" to ${name} ${number}`
   );
 }
 
-function sendGroupMessage(job) {
+async function sendGroupMessage(job) {
   serverLog(
     `send_group_message: Sending "${job.message}" to group ${job.target_contact_or_group}`
   );
@@ -121,10 +121,11 @@ function scheduleJob(job) {
 function loadJobs() {
   try {
     const rows = database
-      .prepare("SELECT * FROM jobs WHERE deleted_at IS NULL")
+      .prepare(
+        "SELECT * FROM jobs WHERE target_contact_or_group IS NOT NULL AND message IS NOT NULL AND job_status = 1 AND deleted_at IS NULL AND job_status = 1"
+      )
       .all();
     for (let job of rows) {
-      // Schedule the job if it's not already scheduled
       if (!scheduledJobs.has(job.id)) {
         scheduleJob(job);
       }
@@ -134,24 +135,40 @@ function loadJobs() {
   }
 }
 
-function startCronJobs() {
+async function startCronJobs() {
   serverLog("Cron job started!");
+
+  // Add retry logic for health check
+  let retries = 5;
+  while (retries > 0) {
+    try {
+      const response = await fetch(`${APP_URL}/health`, {
+        method: "GET",
+        timeout: 5000, // Add timeout
+      });
+
+      if (response.ok) {
+        serverLog("Health check successful");
+        break;
+      }
+    } catch (error) {
+      serverLog(
+        `Health check failed (${retries} retries left):`,
+        error.message
+      );
+      retries--;
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+  }
+
+  if (retries === 0) {
+    serverLog("Failed to connect to app after 5 attempts");
+    process.exit(1);
+  }
+
   // Poll the database every 20 seconds for new jobs
   setInterval(loadJobs, 20_000);
   loadJobs(); // Initial load on startup
 }
 
-// Check if WhatsApp client is already authenticated
-if (client.info) {
-  serverLog("WhatsApp Client is authenticated!");
-  startCronJobs();
-} else {
-  serverLog(
-    "WhatsApp Client is not authenticated! Waiting for authentication..."
-  );
-  // Listen for the authentication event
-  client.on("authenticated", () => {
-    serverLog("WhatsApp Client is authenticated!");
-    startCronJobs();
-  });
-}
+startCronJobs();
