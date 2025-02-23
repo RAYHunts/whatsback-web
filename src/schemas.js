@@ -1,20 +1,20 @@
 const database = require("./database");
 const crypto = require("node:crypto");
 
-const commands = () => {
+const create_commands_table = () => {
   const sql = `CREATE TABLE IF NOT EXISTS commands (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, command TEXT UNIQUE NOT NULL, response TEXT NOT NULL)`;
-  return database.prepare(sql);
+  database.prepare(sql).run();
 };
 
-const contacts = () => {
+const create_contacts_table = () => {
   const sql = `CREATE TABLE IF NOT EXISTS contacts (
     number INTEGER PRIMARY KEY,
     name TEXT
   )`;
-  return database.prepare(sql);
+  database.prepare(sql).run();
 };
 
-const addProfilePictureInContact = () => {
+const alter_profile_picture_in_contact_table = () => {
   const columns = database.prepare("PRAGMA table_info(contacts)").all();
   const columnExists = columns.some((col) => col.name === "profilePicture");
 
@@ -28,21 +28,87 @@ const addProfilePictureInContact = () => {
   }
 };
 
-const groups = () => {
+const create_groups_table = () => {
   const sql = `CREATE TABLE IF NOT EXISTS groups (
     groupId TEXT PRIMARY KEY,
     groupName TEXT,
     totalParticipants INTEGER
   )`;
-  return database.prepare(sql);
+  database.prepare(sql).run();
+};
+
+const create_jobs_table = () => {
+  database
+    .prepare(
+      `
+  CREATE TABLE IF NOT EXISTS jobs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    job_name TEXT,
+    job_trigger TEXT,
+    target_contact_or_group TEXT,
+    message TEXT,
+    job_cron_expression TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME,
+    deleted_at DATETIME
+  )
+`
+    )
+    .run();
+};
+
+const alter_job_status_in_jobs_table = () => {
+  const columns = database.prepare("PRAGMA table_info(jobs)").all();
+  const columnExists = columns.some((col) => col.name === "job_status");
+
+  if (!columnExists) {
+    const sql = `
+      ALTER TABLE jobs 
+      ADD COLUMN job_status INTEGER NOT NULL DEFAULT 1
+    `;
+    database.prepare(sql).run();
+  }
+};
+
+const create_job_histories_table = () => {
+  database
+    .prepare(
+      `
+CREATE TABLE IF NOT EXISTS job_histories (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  job_name TEXT,
+  job_execute_time DATETIME,
+  job_complete_time DATETIME,
+  job_error_message TEXT
+)
+`
+    )
+    .run();
+};
+
+const create_table_message_histories = () => {
+  database.prepare(
+    `CREATE TABLE IF NOT EXISTS message_histories (
+  message_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  message_target TEXT NOT NULL,
+  message_content TEXT,
+  message_type TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  deleted_at DATETIME
+);
+`
+  ).run();
 };
 
 const init = () => {
-  commands().run();
-  contacts().run();
-  addProfilePictureInContact();
-  groups().run();
+  create_commands_table();
+  create_contacts_table();
+  alter_profile_picture_in_contact_table();
+  create_groups_table();
+  create_jobs_table();
+  alter_job_status_in_jobs_table();
+  create_job_histories_table();
+  create_table_message_histories();
 };
 
 module.exports = init;
-
