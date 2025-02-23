@@ -1,9 +1,9 @@
 const contact = require("../models/contact");
 
-const displayContacts = (req, res) => {
+const displayContacts = (_, res) => {
   const contacts = contact.iterate();
   const totalContacts = contact.count();
-  res.render("contacts", { title: "Contacts", contacts, totalContacts });
+  res.render("contacts", { title: "Contacts", pathname: 'contacts', contacts, totalContacts });
 };
 
 module.exports = {
