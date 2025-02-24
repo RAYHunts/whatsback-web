@@ -54,12 +54,13 @@ Whatsback Provider is a simple WhatsApp provider that offers basic functionality
 
 ### Key Configuration Options
 
-| Environment Variable | Description              | Default               |
-|----------------------|--------------------------|-----------------------|
-| `NODE_ENV`           | Runtime environment      | `production`          |
-| `APP_PORT`           | Application port         | `5001`                |
-| `UI_PORT`            | External exposed port    | `8169`                |
-| `DB_PATH`            | Path to SQLite database  | `/data/database.sqlite` |
+| Environment Variable | Description              | Default                  |
+|----------------------|--------------------------|------------------------- |
+| `NODE_ENV`           | Runtime environment       | `production`            |
+| `APP_PORT`           | Application port          | `5001`                  |
+| `UI_PORT`            | External exposed port     | `8169`                  |
+| `DB_PATH`            | Path to SQLite database   | `/data/database.sqlite` |
+| `TZ`                 | Set your default timezone | `Asia/Jakarta` default `UTC` |
 
 ### Docker Installation
 
@@ -107,7 +108,7 @@ Whatsback Provider is a simple WhatsApp provider that offers basic functionality
     -e APP_HOST=whatsback-app-provider \
     -e DB_PATH=/data/database.sqlite \
     -v whatsback-db:/data \
-    your-dockerhub-username/whatsback-app:latest \
+    ghcr.io/darkterminal/whatsback-web:latest \
     sh -c "./wait-for whatsback-app-provider:5001 -t 120 -- node cronjob.js"
   ```
 
