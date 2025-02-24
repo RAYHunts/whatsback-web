@@ -1,7 +1,9 @@
 const {
   phoneNumberFormatter,
   calculateTypingDuration,
+  serverLog,
 } = require("../../helper");
+const group = require("../../models/group");
 const { recordMessageHistory } = require("../../models/message_history");
 const { client } = require("../../whatsapp-client");
 
@@ -70,14 +72,21 @@ const sendMessageToUser = async (req, res) => {
  */
 const sendMessageToGroup = async (req, res) => {
   try {
-    const { groupId, message } = req.body;
+    let { groupId, message } = req.body;
 
     if (!groupId.endsWith("@g.us")) {
-      res.status(422).json({
-        status: false,
-        message: `Message sent to group`,
-      });
-      serverLog("Invalid group ID. Group IDs must end with '@g.us'.");
+      let detailGroup = group.findByName(groupId);
+
+      if (!detailGroup) {
+        serverLog("send_grou_message: Group not found");
+        res.status(404).json({
+          status: false,
+          message: `Group not found`,
+        });
+        return;
+      }
+
+      groupId = detailGroup.groupId;
     }
 
     await typingMessage(groupId, message);
@@ -85,11 +94,13 @@ const sendMessageToGroup = async (req, res) => {
     await client.sendMessage(groupId, message);
     recordMessageHistory(groupId, message, "GROUP_MESSAGE");
 
+    serverLog("send_group_message: Message sent to group");
     res.status(200).json({
       status: true,
       message: `Message sent to group`,
     });
   } catch (error) {
+    serverLog("send_group_message: Error sending message to group");
     res.status(500).json({
       status: false,
       message: `API Error - ${error.message}`,
