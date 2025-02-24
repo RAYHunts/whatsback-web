@@ -7,21 +7,21 @@
  * @returns {Function} express middleware
  */
 module.exports = function validateRequestBody(requiredFields) {
-  return (req, res, next) => {
-    const errors = [];
+    return (req, res, next) => {
+        const errors = [];
 
-    for (const [field, type] of Object.entries(requiredFields)) {
-      if (!(field in req.body)) {
-        errors.push(`${field} is required.`);
-      } else if (type && typeof req.body[field] !== type) {
-        errors.push(`${field} must be of type ${type}.`);
-      }
-    }
+        for (const [field, type] of Object.entries(requiredFields)) {
+            if (!(field in req.body)) {
+                errors.push(`${field} is required.`);
+            } else if (type && typeof req.body[field] !== type) {
+                errors.push(`${field} must be of type ${type}.`);
+            }
+        }
 
-    if (errors.length > 0) {
-      return res.status(400).json({ errors });
-    }
+        if (errors.length > 0) {
+            return res.status(400).json({ errors });
+        }
 
-    next();
-  };
+        next();
+    };
 };

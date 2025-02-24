@@ -1,39 +1,46 @@
-import sonarjs from "eslint-plugin-sonarjs";
-import unicorn from "eslint-plugin-unicorn";
+import mocha from "eslint-plugin-mocha";
 import globals from "globals";
-import noUnboundedPromiseAll from "./lib/es-rules/no-unbounded-promise-all.js";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import js from "@eslint/js";
+import { FlatCompat } from "@eslint/eslintrc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const compat = new FlatCompat({
+    baseDirectory: __dirname,
+    recommendedConfig: js.configs.recommended,
+    allConfig: js.configs.all,
+});
 
 export default [
-  {
-    ignores: ["tailwind.config.js"],
-  },
-  {
-    plugins: {
-      sonarjs,
-      unicorn,
-      "whatsback-rules": {
+    {
+        ignores: ["**/docs", "tests.js", "eslint.config.mjs", "public/**"],
+    },
+    ...compat.extends("eslint:recommended", "plugin:mocha/recommended"),
+    {
+        plugins: {
+            mocha,
+        },
+
+        languageOptions: {
+            globals: {
+                ...globals.browser,
+                ...globals.commonjs,
+                ...globals.node,
+                Atomics: "readonly",
+                SharedArrayBuffer: "readonly",
+            },
+
+            ecmaVersion: 2020,
+            sourceType: "commonjs",
+        },
+
         rules: {
-          "no-unbounded-promise-all": noUnboundedPromiseAll,
+            indent: ["error", 4],
+            "linebreak-style": ["error", "unix"],
+            quotes: ["error", "double"],
+            semi: ["error", "always"],
         },
-      },
     },
-    languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.es2021,
-      },
-    },
-    rules: {
-      ...sonarjs.configs.recommended.rules,
-      ...unicorn.configs.recommended.rules,
-      "whatsback-rules/no-unbounded-promise-all": "error",
-      "unicorn/prefer-module": "off",
-      "unicorn/prevent-abbreviations": [
-        "error",
-        {
-          allowList: { req: true, res: true, next: true },
-        },
-      ],
-    },
-  },
 ];

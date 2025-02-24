@@ -10,20 +10,20 @@ const userInfo = require("../get-profile");
  * @returns {void}
  */
 module.exports = async function readyHandler(client, connectedSockets, state) {
-  serverLog("WhatsApp client is ready");
-  state.isReady = true;
+    serverLog("WhatsApp client is ready");
+    state.isReady = true;
 
-  const info = await userInfo(client);
+    const info = await userInfo(client);
 
-  for (const socket of connectedSockets) {
-    socket.emit("ready", {
-      log: "WhatsApp is ready!",
-      user_info: {
-        name: info.name,
-        picture: info.picture,
-      },
-    });
-    socket.emit("logs", "WhatsApp is ready!");
-  }
+    for (const socket of connectedSockets) {
+        socket.emit("ready", {
+            log: "WhatsApp is ready!",
+            user_info: {
+                name: info.name,
+                picture: info.picture,
+            },
+        });
+        socket.emit("logs", "WhatsApp is ready!");
+    }
 };
 

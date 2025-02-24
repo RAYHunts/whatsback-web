@@ -8,72 +8,72 @@
  * @returns {boolean} - True if valid.
  */
 function isValidCronField(field, min, max, options = {}) {
-  const { allowL = false, allowHash = false } = options;
+    const { allowL = false, allowHash = false } = options;
 
-  // Split the field by commas to allow lists
-  const parts = field.split(",");
-  for (let part of parts) {
-    part = part.trim();
+    // Split the field by commas to allow lists
+    const parts = field.split(',');
+    for (let part of parts) {
+        part = part.trim();
 
-    // Allow a single asterisk.
-    if (part === "*") continue;
+        // Allow a single asterisk.
+        if (part === '*') continue;
 
-    // Allow "*/step" pattern.
-    let match = part.match(/^\*\/(\d+)$/);
-    if (match) {
-      const step = parseInt(match[1], 10);
-      if (step < 1 || step > max) return false;
-      continue;
+        // Allow "*/step" pattern.
+        let match = part.match(/^\*\/(\d+)$/);
+        if (match) {
+            const step = parseInt(match[1], 10);
+            if (step < 1 || step > max) return false;
+            continue;
+        }
+
+        // Allow a plain number.
+        if (/^\d+$/.test(part)) {
+            const num = parseInt(part, 10);
+            if (num < min || num > max) return false;
+            continue;
+        }
+
+        // Allow a number with an "L" suffix (e.g. "6L") if allowed.
+        if (allowL && /^(\d+)L$/.test(part)) {
+            const num = parseInt(part, 10);
+            if (num < min || num > max) return false;
+            continue;
+        }
+
+        // Allow a standalone "L" if allowed.
+        if (allowL && part === 'L') continue;
+
+        // Allow ranges, with an optional "/step": e.g. "10-30" or "10-30/2"
+        match = part.match(/^(\d+)-(\d+)(\/(\d+))?$/);
+        if (match) {
+            const start = parseInt(match[1], 10);
+            const end = parseInt(match[2], 10);
+            if (start > end || start < min || end > max) return false;
+            if (match[3]) {
+                // if there is a step value
+                const step = parseInt(match[4], 10);
+                if (step < 1 || step > max) return false;
+            }
+            continue;
+        }
+
+        // Allow hash syntax for day-of-week (e.g. "6#3") if allowed.
+        if (allowHash) {
+            match = part.match(/^(\d+)#(\d+)$/);
+            if (match) {
+                const num = parseInt(match[1], 10);
+                const nth = parseInt(match[2], 10);
+                if (num < min || num > max) return false;
+                // Typically, the nth occurrence is between 1 and 5.
+                if (nth < 1 || nth > 5) return false;
+                continue;
+            }
+        }
+
+        // If nothing matches, the token is invalid.
+        return false;
     }
-
-    // Allow a plain number.
-    if (/^\d+$/.test(part)) {
-      const num = parseInt(part, 10);
-      if (num < min || num > max) return false;
-      continue;
-    }
-
-    // Allow a number with an "L" suffix (e.g. "6L") if allowed.
-    if (allowL && /^(\d+)L$/.test(part)) {
-      const num = parseInt(part, 10);
-      if (num < min || num > max) return false;
-      continue;
-    }
-
-    // Allow a standalone "L" if allowed.
-    if (allowL && part === "L") continue;
-
-    // Allow ranges, with an optional "/step": e.g. "10-30" or "10-30/2"
-    match = part.match(/^(\d+)-(\d+)(\/(\d+))?$/);
-    if (match) {
-      const start = parseInt(match[1], 10);
-      const end = parseInt(match[2], 10);
-      if (start > end || start < min || end > max) return false;
-      if (match[3]) {
-        // if there is a step value
-        const step = parseInt(match[4], 10);
-        if (step < 1 || step > max) return false;
-      }
-      continue;
-    }
-
-    // Allow hash syntax for day-of-week (e.g. "6#3") if allowed.
-    if (allowHash) {
-      match = part.match(/^(\d+)#(\d+)$/);
-      if (match) {
-        const num = parseInt(match[1], 10);
-        const nth = parseInt(match[2], 10);
-        if (num < min || num > max) return false;
-        // Typically, the nth occurrence is between 1 and 5.
-        if (nth < 1 || nth > 5) return false;
-        continue;
-      }
-    }
-
-    // If nothing matches, the token is invalid.
-    return false;
-  }
-  return true;
+    return true;
 }
 
 /**
@@ -86,64 +86,64 @@ function isValidCronField(field, min, max, options = {}) {
  * @returns {object} - An object with { valid: boolean, message: string }
  */
 function validateCronExpression(cronExpr) {
-  const fields = cronExpr.trim().split(/\s+/);
-  if (!(fields.length === 5 || fields.length === 6)) {
-    return {
-      valid: false,
-      message: `❌ Invalid field count (${fields.length}). Expected 5 or 6 fields.`,
-    };
-  }
-
-  // Define validators for each field depending on the number of fields.
-  let validators;
-  if (fields.length === 5) {
-    // Standard cron: Minute, Hour, Day-of-Month, Month, Day-of-Week
-    validators = [
-      { name: "Minute", min: 0, max: 59, options: {} },
-      { name: "Hour", min: 0, max: 23, options: {} },
-      { name: "Day of Month", min: 1, max: 31, options: { allowL: true } },
-      { name: "Month", min: 1, max: 12, options: {} },
-      {
-        name: "Day of Week",
-        min: 0,
-        max: 7,
-        options: { allowL: true, allowHash: true },
-      },
-    ];
-  } else {
-    // Quartz cron (6 fields): Second, Minute, Hour, Day-of-Month, Month, Day-of-Week
-    validators = [
-      { name: "Second", min: 0, max: 59, options: {} },
-      { name: "Minute", min: 0, max: 59, options: {} },
-      { name: "Hour", min: 0, max: 23, options: {} },
-      { name: "Day of Month", min: 1, max: 31, options: { allowL: true } },
-      { name: "Month", min: 1, max: 12, options: {} },
-      {
-        name: "Day of Week",
-        min: 0,
-        max: 7,
-        options: { allowL: true, allowHash: true },
-      },
-    ];
-  }
-
-  // Validate each field.
-  for (let i = 0; i < fields.length; i++) {
-    if (
-      !isValidCronField(
-        fields[i],
-        validators[i].min,
-        validators[i].max,
-        validators[i].options
-      )
-    ) {
-      return {
-        valid: false,
-        message: `❌ Invalid ${validators[i].name} field: "${fields[i]}".`,
-      };
+    const fields = cronExpr.trim().split(/\s+/);
+    if (!(fields.length === 5 || fields.length === 6)) {
+        return {
+            valid: false,
+            message: `❌ Invalid field count (${fields.length}). Expected 5 or 6 fields.`,
+        };
     }
-  }
-  return { valid: true, message: "✅ Cron expression is valid." };
+
+    // Define validators for each field depending on the number of fields.
+    let validators;
+    if (fields.length === 5) {
+    // Standard cron: Minute, Hour, Day-of-Month, Month, Day-of-Week
+        validators = [
+            { name: 'Minute', min: 0, max: 59, options: {} },
+            { name: 'Hour', min: 0, max: 23, options: {} },
+            { name: 'Day of Month', min: 1, max: 31, options: { allowL: true } },
+            { name: 'Month', min: 1, max: 12, options: {} },
+            {
+                name: 'Day of Week',
+                min: 0,
+                max: 7,
+                options: { allowL: true, allowHash: true },
+            },
+        ];
+    } else {
+    // Quartz cron (6 fields): Second, Minute, Hour, Day-of-Month, Month, Day-of-Week
+        validators = [
+            { name: 'Second', min: 0, max: 59, options: {} },
+            { name: 'Minute', min: 0, max: 59, options: {} },
+            { name: 'Hour', min: 0, max: 23, options: {} },
+            { name: 'Day of Month', min: 1, max: 31, options: { allowL: true } },
+            { name: 'Month', min: 1, max: 12, options: {} },
+            {
+                name: 'Day of Week',
+                min: 0,
+                max: 7,
+                options: { allowL: true, allowHash: true },
+            },
+        ];
+    }
+
+    // Validate each field.
+    for (let i = 0; i < fields.length; i++) {
+        if (
+            !isValidCronField(
+                fields[i],
+                validators[i].min,
+                validators[i].max,
+                validators[i].options
+            )
+        ) {
+            return {
+                valid: false,
+                message: `❌ Invalid ${validators[i].name} field: "${fields[i]}".`,
+            };
+        }
+    }
+    return { valid: true, message: '✅ Cron expression is valid.' };
 }
 
 // ---------------------

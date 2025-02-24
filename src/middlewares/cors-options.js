@@ -26,7 +26,7 @@ const additionalCors = (req, res, next) => {
             : `http://${host}`;
 
         if (!allowedOrigins.includes(expectedHost)) {
-        return res.status(403).end();
+            return res.status(403).end();
         }
     }
 
@@ -38,9 +38,9 @@ const additionalCors = (req, res, next) => {
 };
 
 const apiCors = {
-  origin: parseOrigins(process.env.API_CORS_ORIGIN),
-  allowedHeaders: ["Content-Type"],
-  methods: ["GET", "POST", "OPTIONS", "DELETE", "PUT"],
+    origin: parseOrigins(process.env.API_CORS_ORIGIN),
+    allowedHeaders: ["Content-Type"],
+    methods: ["GET", "POST", "OPTIONS", "DELETE", "PUT"],
 };
 
 module.exports = {

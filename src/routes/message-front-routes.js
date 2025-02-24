@@ -1,8 +1,8 @@
 const express = require("express");
 const {
-  displaySendMessageToUser,
-  displaySendMessageToGroup,
-  displayScheduleMessage,
+    displaySendMessageToUser,
+    displaySendMessageToGroup,
+    displayScheduleMessage,
 } = require("../controllers/message-front-controller");
 const router = express.Router();
 

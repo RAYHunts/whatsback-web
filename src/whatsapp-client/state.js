@@ -5,7 +5,7 @@
  * @property {boolean} isReady - Indicates whether the application is ready.
  */
 module.exports = {
-  lastQR: undefined,
-  isAuthenticated: false,
-  isReady: false,
+    lastQR: undefined,
+    isAuthenticated: false,
+    isReady: false,
 };

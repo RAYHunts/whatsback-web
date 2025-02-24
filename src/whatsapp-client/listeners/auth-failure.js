@@ -6,8 +6,8 @@ const { serverLog } = require("../../helper");
  * @param {Array<Object>} connectedSockets - An array of connected sockets.
  */
 module.exports = function authFailureHandler(connectedSockets) {
-  serverLog("WhatsApp client failed to authenticate");
-  for (const socket of connectedSockets) {
-    socket.emit("logs", "Auth failure, restarting...");
-  }
+    serverLog("WhatsApp client failed to authenticate");
+    for (const socket of connectedSockets) {
+        socket.emit("logs", "Auth failure, restarting...");
+    }
 };

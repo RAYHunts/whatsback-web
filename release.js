@@ -17,17 +17,17 @@ const bumpType = process.argv[2] || "patch";
  * @return {string} new version string
  */
 function bumpVersion(version, type) {
-  const [major, minor, patch] = version
-    .split(".")
-    .map((num) => parseInt(num, 10));
-  if (type === "major") {
-    return `${major + 1}.0.0`;
-  } else if (type === "minor") {
-    return `${major}.${minor + 1}.0`;
-  } else {
+    const [major, minor, patch] = version
+        .split(".")
+        .map((num) => parseInt(num, 10));
+    if (type === "major") {
+        return `${major + 1}.0.0`;
+    } else if (type === "minor") {
+        return `${major}.${minor + 1}.0`;
+    } else {
     // default: patch
-    return `${major}.${minor}.${patch + 1}`;
-  }
+        return `${major}.${minor}.${patch + 1}`;
+    }
 }
 
 const newVersion = bumpVersion(currentVersion, bumpType);
@@ -43,7 +43,7 @@ execSync("git add package.json", { stdio: "inherit" });
 // Commit the version bump
 console.log("💾 Committing changes...");
 execSync(`git commit -m "chore: bump version to ${newVersion}"`, {
-  stdio: "inherit",
+    stdio: "inherit",
 });
 
 // Create a tag (without a "v" prefix)

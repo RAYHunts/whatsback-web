@@ -9,23 +9,23 @@ const { serverLog } = require("../../helper");
  * @returns {Promise<void>}
  */
 module.exports = async function disconnectedHandler(
-  reason,
-  client,
-  connectedSockets
+    reason,
+    client,
+    connectedSockets
 ) {
-  try {
-    serverLog(`WhatsApp client disconnected, reason: ${reason}`);
-    for (const socket of connectedSockets) {
-      socket.emit("disconnected", `Client disconnected: ${reason}`);
+    try {
+        serverLog(`WhatsApp client disconnected, reason: ${reason}`);
+        for (const socket of connectedSockets) {
+            socket.emit("disconnected", `Client disconnected: ${reason}`);
+        }
+        await client.destroy();
+        await client.initialize();
+        for (const socket of connectedSockets) {
+            socket.emit("logs", "WhatsApp client reinitializing...");
+        }
+        serverLog("WhatsApp client reinitialized after disconnection");
+    } catch (error) {
+        serverLog("Error in disconnection handler: " + error);
     }
-    await client.destroy();
-    await client.initialize();
-    for (const socket of connectedSockets) {
-      socket.emit("logs", "WhatsApp client reinitializing...");
-    }
-    serverLog("WhatsApp client reinitialized after disconnection");
-  } catch (error) {
-    serverLog("Error in disconnection handler: " + error);
-  }
 };
 
