@@ -2,7 +2,7 @@
   "categories": [
     {
       "title": "🚀 Features",
-      "labels": ["feature", "enhancement"]
+      "labels": ["feature", "enhancement", "feat"]
     },
     {
       "title": "🐛 Bug Fixes",
@@ -15,6 +15,10 @@
     {
       "title": "📚 Documentation",
       "labels": ["documentation", "docs"]
+    },
+    {
+      "title": "📝 Chore",
+      "labels": ["chore"]
     }
   ],
   "ignore_labels": ["duplicate", "invalid", "question", "wontfix"],

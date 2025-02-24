@@ -8,6 +8,8 @@ const openModalButton = document.querySelector("#open-modal");
 const closeModalButton = document.querySelector("#close-modal");
 const themeToggleBtn = document.querySelector("#theme-toggle");
 const themeIcon = document.querySelector("#theme-icon");
+const themeUserManualToggleBtn = document.querySelector("#user-manual-theme-toggle");
+const themeUserManualIcon = document.querySelector("#user-manual-theme-icon");
 
 const socket = io();
 const SESSION_NAME = "whatsapp_session";
@@ -38,9 +40,17 @@ if (storedTheme && themeIcon) {
   if (storedTheme === "dark") {
     themeIcon.classList.remove("fa-moon");
     themeIcon.classList.add("fa-sun");
+    if (themeUserManualIcon) {
+      themeUserManualIcon.classList.remove("fa-moon");
+      themeUserManualIcon.classList.add("fa-sun");
+    }
   } else {
     themeIcon.classList.remove("fa-sun");
     themeIcon.classList.add("fa-moon");
+    if (themeUserManualIcon) {
+      themeUserManualIcon.classList.remove("fa-sun");
+      themeUserManualIcon.classList.add("fa-moon");
+    }
   }
 }
 
@@ -129,10 +139,18 @@ function toggleTheme() {
     localStorage.setItem("theme", "light");
     themeIcon.classList.remove("fa-sun");
     themeIcon.classList.add("fa-moon");
+    if (themeUserManualIcon) {
+      themeUserManualIcon.classList.remove("fa-sun");
+      themeUserManualIcon.classList.add("fa-moon");
+    }
   } else {
     localStorage.setItem("theme", "dark");
     themeIcon.classList.remove("fa-moon");
     themeIcon.classList.add("fa-sun");
+    if (themeUserManualIcon) {
+      themeUserManualIcon.classList.remove("fa-moon");
+      themeUserManualIcon.classList.add("fa-sun");
+    }
   }
   document.documentElement.classList.toggle(
     "dark",
@@ -221,6 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   themeToggleBtn?.addEventListener("click", toggleTheme);
+  themeUserManualToggleBtn?.addEventListener("click", toggleTheme);
   backdrop?.addEventListener("click", toggleSidebar);
   toggleSidebarButton?.addEventListener("click", toggleSidebar);
   menuButton?.addEventListener("click", toggleMenu);
