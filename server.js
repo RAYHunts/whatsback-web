@@ -63,7 +63,7 @@ app.use(express.json());
 // ===================================================
 // Frontend routes
 // ===================================================
-app.get("/", indexFrontRoutes);
+app.use("/", indexFrontRoutes);
 app.use("/commands", commandFrontRoutes);
 app.use("/contacts", contactFrontRoutes);
 app.use("/message", messageFrontRoutes);
