@@ -48,7 +48,7 @@ execSync(`git commit -m "chore: bump version to ${newVersion}"`, {
 
 // Create a tag (without a "v" prefix)
 console.log("🏷️  Creating git tag...");
-execSync(`git tag ${newVersion}`, { stdio: "inherit" });
+execSync(`git tag v${newVersion}`, { stdio: "inherit" });
 
 // Push commit and tags to the remote
 console.log("🚚 Pushing commits to remote...");
