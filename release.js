@@ -52,7 +52,7 @@ execSync(`git tag ${newVersion}`, { stdio: "inherit" });
 
 // Push commit and tags to the remote
 console.log("🚚 Pushing commits to remote...");
-execSync("git push", { stdio: "inherit" });
+execSync("git push origin main", { stdio: "inherit" });
 console.log("🚚 Pushing tags to remote...");
 execSync("git push --tags", { stdio: "inherit" });
 
