@@ -19,6 +19,16 @@ module.exports = {
   },
 
   /**
+   * Retrieves a single group from the database by its 'groupName'.
+   * @param {string} groupName - The 'groupName' of the group to retrieve.
+   * @returns {Object} The group object, or undefined if not found.
+   */
+  findByName: (groupName) => {
+    const stmt = database.prepare(`SELECT groupName, groupId FROM ${table} WHERE groupName = ?`);
+    return stmt.get(groupName);
+  },
+
+  /**
    * Counts the total number of groups in the database.
    * @returns {number} The total number of groups.
    */
