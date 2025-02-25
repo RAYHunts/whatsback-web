@@ -5,15 +5,15 @@ const table = "jobs";
 
 module.exports = {
     /**
-   * Create a new job
-   *
-   * @param {string} jobName Name of the job
-   * @param {string} jobTrigger Trigger for the job (e.g. "send_message")
-   * @param {string} targetContactOrGroup Contact or Group to target
-   * @param {string} message Message to send
-   * @param {string} jobCronExpression Cron expression for scheduling
-   * @returns {number} ID of the created job
-   */
+     * Create a new job
+     *
+     * @param {string} jobName Name of the job
+     * @param {string} jobTrigger Trigger for the job (e.g. "send_message")
+     * @param {string} targetContactOrGroup Contact or Group to target
+     * @param {string} message Message to send
+     * @param {string} jobCronExpression Cron expression for scheduling
+     * @returns {number} ID of the created job
+     */
     create(
         jobName,
         jobTrigger,
@@ -57,10 +57,10 @@ module.exports = {
     },
 
     /**
-   * Finds a job by its ID
-   * @param {number} jobId Job ID to find
-   * @returns {Object} Job object if found, otherwise null
-   */
+     * Finds a job by its ID
+     * @param {number} jobId Job ID to find
+     * @returns {Object} Job object if found, otherwise null
+     */
     findById(jobId) {
         try {
             const stmt = database.prepare(`
@@ -77,10 +77,10 @@ module.exports = {
     },
 
     /**
-   * Finds jobs by its status
-   * @param {number} jobStatus Job status to find (0 = disabled, 1 = enabled)
-   * @returns {Array} Array of job objects if found, otherwise empty array
-   */
+     * Finds jobs by its status
+     * @param {number} jobStatus Job status to find (0 = disabled, 1 = enabled)
+     * @returns {Array} Array of job objects if found, otherwise empty array
+     */
     findByStatus(jobStatus) {
         try {
             const stmt = database.prepare(`
@@ -97,10 +97,10 @@ module.exports = {
     },
 
     /**
-   * Soft deletes a job by its ID
-   * @param {number} jobId Job ID to delete
-   * @returns {Object} Job object if deleted, otherwise null
-   */
+     * Soft deletes a job by its ID
+     * @param {number} jobId Job ID to delete
+     * @returns {Object} Job object if deleted, otherwise null
+     */
     softDeleteById(jobId) {
         try {
             const stmt = database.prepare(`
@@ -117,10 +117,10 @@ module.exports = {
     },
 
     /**
-   * Force deletes a job by its ID
-   * @param {number} jobId Job ID to delete
-   * @returns {Object} Job object if deleted, otherwise null
-   */
+     * Force deletes a job by its ID
+     * @param {number} jobId Job ID to delete
+     * @returns {Object} Job object if deleted, otherwise null
+     */
     forceDeleteById(jobId) {
         try {
             const stmt = database.prepare(`
@@ -137,12 +137,12 @@ module.exports = {
     },
 
     /**
-   * Paginates jobs from the table.
-   * @param {string} [search=""] - Search term to filter jobs by name.
-   * @param {number} [limit=10] - Number of jobs per page.
-   * @param {number} [page=1] - Page number to fetch.
-   * @returns {Array} - Array of paginated jobs.
-   */
+     * Paginates jobs from the table.
+     * @param {string} [search=""] - Search term to filter jobs by name.
+     * @param {number} [limit=10] - Number of jobs per page.
+     * @param {number} [page=1] - Page number to fetch.
+     * @returns {Array} - Array of paginated jobs.
+     */
     paginate: (search = "", limit = 10, page = 1) => {
         const offset = (page - 1) * limit;
         let sql = `SELECT * FROM ${table} WHERE deleted_at IS NULL`;
@@ -162,17 +162,17 @@ module.exports = {
     },
 
     /**
-   * Updates a job by its ID
-   * @param {number} jobId Job ID to update
-   * @param {Object} jobData Job data to update
-   * @returns {Object} Job object if updated, otherwise null
-   */
+     * Updates a job by its ID
+     * @param {number} jobId Job ID to update
+     * @param {Object} jobData Job data to update
+     * @returns {Object} Job object if updated, otherwise null
+     */
     updateById(jobId, jobData) {
         try {
             const stmt = database.prepare(`
         UPDATE ${table} SET ${Object.keys(jobData)
-    .map((key) => `${toSnakeCase(key)} = ?`)
-    .join(", ")} WHERE id = ?
+                .map((key) => `${toSnakeCase(key)} = ?`)
+                .join(", ")} WHERE id = ?
       `);
 
             const result = stmt.run(...Object.values(jobData), jobId);
@@ -184,14 +184,15 @@ module.exports = {
         }
     },
 
-  
     /**
-   * Counts all jobs in the table
-   * @returns {number} Count of all jobs
-   */
+     * Counts all jobs in the table
+     * @returns {number} Count of all jobs
+     */
     countAll() {
         try {
-            const stmt = database.prepare(`SELECT COUNT(*) AS total FROM ${table} WHERE deleted_at IS NULL`);
+            const stmt = database.prepare(
+                `SELECT COUNT(*) AS total FROM ${table} WHERE deleted_at IS NULL`
+            );
             return stmt.get().total;
         } catch (error) {
             serverLog("Error counting all jobs:", error.message);

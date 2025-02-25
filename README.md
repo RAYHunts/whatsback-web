@@ -2,7 +2,7 @@
 > **Whatsback Web** and [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) are not officially supported by WhatsApp. Use this project at your own risk.
 
 <p align="center">
-  <img src="/public/images/logo-whatsback-banner.png" width="50%" />
+    <img src="https://i.imgur.com/X1bM7I6.png" />
 </p>
 <p align="center">
   <img src="https://github.com/darkterminal/whatsback-web/actions/workflows/release.yml/badge.svg" alt="Whatsback Web GitHub Action" />

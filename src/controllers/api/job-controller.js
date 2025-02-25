@@ -3,13 +3,13 @@ const job = require("../../models/job");
 
 module.exports = {
     /**
-   * GET /api/jobs
-   * @summary Fetch a page of jobs (with or without a search term).
-   * @param {import("express").Request} req - The request object, containing query parameters for search, perPage, and page.
-   * @param {import("express").Response} res - The response object.
-   * @returns {void} - Responds with a JSON object containing a success status and an array of jobs if successful, otherwise an error message.
-   * @throws {Error} - If there is an error with the database query.
-   */
+     * GET /api/jobs
+     * @summary Fetch a page of jobs (with or without a search term).
+     * @param {import("express").Request} req - The request object, containing query parameters for search, perPage, and page.
+     * @param {import("express").Response} res - The response object.
+     * @returns {void} - Responds with a JSON object containing a success status and an array of jobs if successful, otherwise an error message.
+     * @throws {Error} - If there is an error with the database query.
+     */
     getJobs: (req, res) => {
         try {
             const searchTerm = req.query.search || "";
@@ -32,13 +32,13 @@ module.exports = {
     },
 
     /**
-   * Updates an existing job by its ID.
-   *
-   * @param {import("express").Request} req - The request object, containing the job ID in params and the job data in body.
-   * @param {import("express").Response} res - The response object.
-   * @returns {void} - Responds with a JSON object containing success status and updated job data if successful, otherwise an error message.
-   * Logs the update operation and any errors encountered.
-   */
+     * Updates an existing job by its ID.
+     *
+     * @param {import("express").Request} req - The request object, containing the job ID in params and the job data in body.
+     * @param {import("express").Response} res - The response object.
+     * @returns {void} - Responds with a JSON object containing success status and updated job data if successful, otherwise an error message.
+     * Logs the update operation and any errors encountered.
+     */
     updateJob: (req, res) => {
         const jobId = req.params.id;
         const jobData = req.body;
@@ -59,13 +59,13 @@ module.exports = {
     },
 
     /**
-   * Soft deletes a job by its ID.
-   *
-   * @param {import("express").Request} req - The request object, containing the job ID in params.
-   * @param {import("express").Response} res - The response object.
-   * @returns {void} - Responds with a JSON object containing success status and deleted job data if successful, otherwise an error message.
-   * Logs the delete operation and any errors encountered.
-   */
+     * Soft deletes a job by its ID.
+     *
+     * @param {import("express").Request} req - The request object, containing the job ID in params.
+     * @param {import("express").Response} res - The response object.
+     * @returns {void} - Responds with a JSON object containing success status and deleted job data if successful, otherwise an error message.
+     * Logs the delete operation and any errors encountered.
+     */
     deleteJob: (req, res) => {
         const jobId = req.params.id;
         try {
@@ -85,13 +85,13 @@ module.exports = {
     },
 
     /**
-   * Force deletes a job by its ID.
-   *
-   * @param {import("express").Request} req - The request object, containing the job ID in params.
-   * @param {import("express").Response} res - The response object.
-   * @returns {void} - Responds with a JSON object containing success status and deleted job data if successful, otherwise an error message.
-   * Logs the delete operation and any errors encountered.
-   */
+     * Force deletes a job by its ID.
+     *
+     * @param {import("express").Request} req - The request object, containing the job ID in params.
+     * @param {import("express").Response} res - The response object.
+     * @returns {void} - Responds with a JSON object containing success status and deleted job data if successful, otherwise an error message.
+     * Logs the delete operation and any errors encountered.
+     */
     forceDeleteJob: (req, res) => {
         const jobId = req.params.id;
         try {
@@ -111,16 +111,16 @@ module.exports = {
     },
 
     /**
-   * Creates a new job in the database.
-   *
-   * @param {Object} jobData - The job data.
-   * @param {string} jobData.job_name - The name of the job.
-   * @param {string} jobData.job_trigger - The trigger type for the job (e.g., "send_message").
-   * @param {string} jobData.target_contact_or_group - The target contact or group for the job.
-   * @param {string} jobData.message - The message content for the job.
-   * @param {string} jobData.job_cron_expression - The cron expression for scheduling the job.
-   * @returns {boolean} - Returns true if the job was successfully created, otherwise false.
-   */
+     * Creates a new job in the database.
+     *
+     * @param {Object} jobData - The job data.
+     * @param {string} jobData.job_name - The name of the job.
+     * @param {string} jobData.job_trigger - The trigger type for the job (e.g., "send_message").
+     * @param {string} jobData.target_contact_or_group - The target contact or group for the job.
+     * @param {string} jobData.message - The message content for the job.
+     * @param {string} jobData.job_cron_expression - The cron expression for scheduling the job.
+     * @returns {boolean} - Returns true if the job was successfully created, otherwise false.
+     */
     createJob: (req, res) => {
         const jobData = req.body;
         try {
@@ -148,11 +148,11 @@ module.exports = {
     },
 
     /**
-   * Finds a job by its ID.
-   *
-   * @param {number} id - The job ID.
-   * @returns {(Object|null)} - The job object if found, otherwise null.
-   */
+     * Finds a job by its ID.
+     *
+     * @param {number} id - The job ID.
+     * @returns {(Object|null)} - The job object if found, otherwise null.
+     */
     findJobById: (req, res) => {
         const id = req.params.id;
         try {
@@ -179,11 +179,11 @@ module.exports = {
     },
 
     /**
-   * Finds jobs by their status.
-   *
-   * @param {number} status - The status of the jobs to be found (e.g., 0 for disabled, 1 for enabled).
-   * @returns {(Array|null)} - An array of job objects if found, otherwise null.
-   */
+     * Finds jobs by their status.
+     *
+     * @param {number} status - The status of the jobs to be found (e.g., 0 for disabled, 1 for enabled).
+     * @returns {(Array|null)} - An array of job objects if found, otherwise null.
+     */
     findJobByStatus: (req, res) => {
         const status = req.params.status;
         try {

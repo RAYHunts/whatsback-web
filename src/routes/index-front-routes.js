@@ -14,14 +14,16 @@ router.get("/", (req, res) => {
 });
 
 router.get("/user-manual", (req, res) => {
-    const totalDirectMessages = message_history.countDirectMessage();
-    const totalGroupMessages = message_history.countGroupMessage();
-
     res.render("user-manual", {
         pathname: "user-manual",
         title: "User Manual",
-        totalDirectMessages,
-        totalGroupMessages,
+    });
+});
+
+router.get("/integration", (req, res) => {
+    res.render("integration", {
+        pathname: "integration",
+        title: "Integration",
     });
 });
 

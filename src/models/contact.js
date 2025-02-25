@@ -5,19 +5,21 @@ const table = "contacts";
 
 module.exports = {
     /**
-   * Retrieves a contact from the database by its number.
-   * @param {string} number - The phone number of the contact to retrieve.
-   * @returns {Object} The contact object, or undefined if not found.
-   */
+     * Retrieves a contact from the database by its number.
+     * @param {string} number - The phone number of the contact to retrieve.
+     * @returns {Object} The contact object, or undefined if not found.
+     */
     find: (number) => {
-        const stmt = database.prepare(`SELECT * FROM ${table} WHERE number = ?`);
+        const stmt = database.prepare(
+            `SELECT * FROM ${table} WHERE number = ?`
+        );
         return stmt.get(number);
     },
 
     /**
-   * Returns the total number of contacts in the table.
-   * @returns {number} - Total number of contacts.
-   */
+     * Returns the total number of contacts in the table.
+     * @returns {number} - Total number of contacts.
+     */
     count: () => {
         const stmt = database.prepare(
             `SELECT COUNT(number) AS total FROM ${table}`
@@ -27,11 +29,13 @@ module.exports = {
     },
 
     /**
-   * Returns an iterator for all contacts in the table.
-   * @returns {Iterator} - Iterator for all contacts.
-   */
+     * Returns an iterator for all contacts in the table.
+     * @returns {Iterator} - Iterator for all contacts.
+     */
     iterate: () => {
-        const stmt = database.prepare(`SELECT * FROM ${table} ORDER BY name ASC`);
+        const stmt = database.prepare(
+            `SELECT * FROM ${table} ORDER BY name ASC`
+        );
         const iterator = stmt.iterate();
 
         // Convert the iterator to an array
@@ -44,12 +48,12 @@ module.exports = {
     },
 
     /**
-   * Paginates contacts from the table.
-   * @param {string} search - Search contact name
-   * @param {number} limit - Number of contacts per page.
-   * @param {number} page - Number of contacts to skip.
-   * @returns {Array} - Array of paginated contacts.
-   */
+     * Paginates contacts from the table.
+     * @param {string} search - Search contact name
+     * @param {number} limit - Number of contacts per page.
+     * @param {number} page - Number of contacts to skip.
+     * @returns {Array} - Array of paginated contacts.
+     */
     paginate: (search = "", limit = 10, page = 0) => {
         const offset = (page - 1) * limit;
 
@@ -65,9 +69,9 @@ module.exports = {
     },
 
     /**
-   * Inserts or replaces multiple contacts in the table.
-   * @param {Array} contacts - Array of contact objects with `name` and `number` properties.
-   */
+     * Inserts or replaces multiple contacts in the table.
+     * @param {Array} contacts - Array of contact objects with `name` and `number` properties.
+     */
     insertOrReplaceMany: (contacts) => {
         const insertOrReplace = database.prepare(`
       INSERT OR REPLACE INTO ${table} (name, number)
@@ -92,9 +96,9 @@ module.exports = {
     },
 
     /**
-   * Upserts multiple contacts in the table.
-   * @param {Array} contacts - Array of contact objects with `name` and `number` properties.
-   */
+     * Upserts multiple contacts in the table.
+     * @param {Array} contacts - Array of contact objects with `name` and `number` properties.
+     */
     upsertMany: (contacts) => {
         const upsertStatement = database.prepare(`
       INSERT INTO contacts (name, number) 

@@ -13,7 +13,7 @@ const getAllCommands = async (req, res) => {
         res.status(200).json({
             status: true,
             data: {
-                commands
+                commands,
             },
         });
     } catch (error) {
@@ -94,7 +94,6 @@ const updateCommand = async (req, res) => {
  * @param {import("express").Response} res - The response object.
  * @returns {Promise<void>}
  */
-
 const deleteCommand = async (req, res) => {
     try {
         const { command_id } = req.params;
