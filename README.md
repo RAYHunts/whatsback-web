@@ -185,7 +185,7 @@ Your server should start on the port defined in the `.env` file (default is 5001
 
 ## Available REST API
 
-You can read the REST API documentation [here](docs/WHATSBACK-API.md)
+You can read the REST API documentation [here](WHATSBACK-API.md)
 
 ## Security Considerations
 
