@@ -64,42 +64,42 @@ const serverLog &#x3D; (type &#x3D; &quot;&quot;, message) &#x3D;&gt; {
     )}:${timeParts[1].padStart(2, &quot;0&quot;)}:${timeParts[2].padStart(2, &quot;0&quot;)}&#x60;;
 
     switch (type) {
-        case &quot;debug&quot;: {
-            logger.debug(message);
-            break;
-        }
-        case &quot;info&quot;: {
-            logger.info(message);
-            break;
-        }
-        case &quot;notice&quot;: {
-            logger.notice(message);
-            break;
-        }
-        case &quot;warning&quot;: {
-            logger.warning(message);
-            break;
-        }
-        case &quot;error&quot;: {
-            logger.error(message);
-            break;
-        }
-        case &quot;crit&quot;: {
-            logger.crit(message);
-            break;
-        }
-        case &quot;alert&quot;: {
-            logger.alert(message);
-            break;
-        }
-        case &quot;emerg&quot;: {
-            logger.emerg(message);
-            break;
-        }
-        default: {
-            logger.debug(message);
-            break;
-        }
+    case &quot;debug&quot;: {
+        logger.debug(message);
+        break;
+    }
+    case &quot;info&quot;: {
+        logger.info(message);
+        break;
+    }
+    case &quot;notice&quot;: {
+        logger.notice(message);
+        break;
+    }
+    case &quot;warning&quot;: {
+        logger.warning(message);
+        break;
+    }
+    case &quot;error&quot;: {
+        logger.error(message);
+        break;
+    }
+    case &quot;crit&quot;: {
+        logger.crit(message);
+        break;
+    }
+    case &quot;alert&quot;: {
+        logger.alert(message);
+        break;
+    }
+    case &quot;emerg&quot;: {
+        logger.emerg(message);
+        break;
+    }
+    default: {
+        logger.debug(message);
+        break;
+    }
     }
 
     console.log(
@@ -161,45 +161,45 @@ const formatInternationalPhoneNumber &#x3D; (number) &#x3D;&gt; {
     let localNumber &#x3D; number.slice(2);
 
     switch (localNumber.length) {
-        case 10: {
-            return &#x60;+62 ${localNumber.replace(
-                /(\d{3})(\d{3})(\d{4})/,
-                &quot;$1-$2-$3&quot;
-            )}&#x60;;
-        }
-        case 11: {
-            return &#x60;+62 ${localNumber.replace(
-                /(\d{3})(\d{4})(\d{4})/,
-                &quot;$1-$2-$3&quot;
-            )}&#x60;;
-        }
-        case 12: {
-            return &#x60;+62 ${localNumber.replace(
-                /(\d{4})(\d{4})(\d{4})/,
-                &quot;$1-$2-$3&quot;
-            )}&#x60;;
-        }
-        case 13: {
-            return &#x60;+62 ${localNumber.replace(
-                /(\d{4})(\d{4})(\d{5})/,
-                &quot;$1-$2-$3&quot;
-            )}&#x60;;
-        }
-        case 14: {
-            return &#x60;+62 ${localNumber.replace(
-                /(\d{4})(\d{5})(\d{5})/,
-                &quot;$1-$2-$3&quot;
-            )}&#x60;;
-        }
-        case 15: {
-            return &#x60;+62 ${localNumber.replace(
-                /(\d{4})(\d{5})(\d{6})/,
-                &quot;$1-$2-$3&quot;
-            )}&#x60;;
-        }
-        default: {
-            return &quot;Invalid length for an Indonesian number&quot;;
-        }
+    case 10: {
+        return &#x60;+62 ${localNumber.replace(
+            /(\d{3})(\d{3})(\d{4})/,
+            &quot;$1-$2-$3&quot;
+        )}&#x60;;
+    }
+    case 11: {
+        return &#x60;+62 ${localNumber.replace(
+            /(\d{3})(\d{4})(\d{4})/,
+            &quot;$1-$2-$3&quot;
+        )}&#x60;;
+    }
+    case 12: {
+        return &#x60;+62 ${localNumber.replace(
+            /(\d{4})(\d{4})(\d{4})/,
+            &quot;$1-$2-$3&quot;
+        )}&#x60;;
+    }
+    case 13: {
+        return &#x60;+62 ${localNumber.replace(
+            /(\d{4})(\d{4})(\d{5})/,
+            &quot;$1-$2-$3&quot;
+        )}&#x60;;
+    }
+    case 14: {
+        return &#x60;+62 ${localNumber.replace(
+            /(\d{4})(\d{5})(\d{5})/,
+            &quot;$1-$2-$3&quot;
+        )}&#x60;;
+    }
+    case 15: {
+        return &#x60;+62 ${localNumber.replace(
+            /(\d{4})(\d{5})(\d{6})/,
+            &quot;$1-$2-$3&quot;
+        )}&#x60;;
+    }
+    default: {
+        return &quot;Invalid length for an Indonesian number&quot;;
+    }
     }
 };
 

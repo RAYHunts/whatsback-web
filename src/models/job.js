@@ -171,8 +171,8 @@ module.exports = {
         try {
             const stmt = database.prepare(`
         UPDATE ${table} SET ${Object.keys(jobData)
-                .map((key) => `${toSnakeCase(key)} = ?`)
-                .join(", ")} WHERE id = ?
+    .map((key) => `${toSnakeCase(key)} = ?`)
+    .join(", ")} WHERE id = ?
       `);
 
             const result = stmt.run(...Object.values(jobData), jobId);
