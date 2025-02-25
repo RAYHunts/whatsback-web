@@ -76,7 +76,7 @@ app.get("/profile", (_, res) =>
 // ===================================================
 app.use("/api/command", commandRoutes);
 app.use("/api/contacts", contactRoutes);
-app.post("/api/cron-next-runs", cronRoutes);
+app.use("/api/cron-next-runs", cronRoutes);
 app.get("/health", (_, res) => res.status(200).send("OK"));
 app.use("/api/groups", groupRoutes);
 app.use("/api/message", messageRoutes);
