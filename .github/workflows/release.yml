@@ -79,10 +79,15 @@ jobs:
 
         - name: Commit Changelog
           run: |
-            git config user.name "GitHub Actions"
-            git config user.email "actions@github.com"
-            git add CHANGELOG.md
-            git commit -m "Update CHANGELOG.md for ${{ github.ref_name }}"
-            git push origin HEAD:main
+            # Only proceed if CHANGELOG.md has changes
+            if ! git diff --quiet CHANGELOG.md; then
+               git config user.name "GitHub Actions"
+               git config user.email "actions@github.com"
+               git add CHANGELOG.md
+               git commit -m "Update CHANGELOG.md for ${{ github.ref_name }}"
+               git push origin HEAD:main
+            else
+               echo "No changes to CHANGELOG.md. Skipping commit."
+            fi
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

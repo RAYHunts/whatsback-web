@@ -10,6 +10,9 @@
   <img src="https://img.shields.io/github/v/release/darkterminal/whatsback-web" alt="Whatsback Web Release" />
   <img src="https://img.shields.io/github/v/tag/darkterminal/whatsback-web?label=package" alt="Whatsback Web Package Registry" />
   <img src="https://img.shields.io/github/downloads/darkterminal/whatsback-web/total" alt="Whatsback Web Downloads" />
+  <a href="https://discord.gg/ZQPEtcWyBh">
+    <img alt="Discord" src="https://img.shields.io/discord/1343952367615217764?style=flat&logo=discord&label=discord">
+  </a>
 </p>
 
 Whatsback Provider is a simple WhatsApp provider that offers basic functionality such as predefined static commands, sending messages to contacts or groups, and listing all contacts. This project leverages the unofficial [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) package to interface with WhatsApp Web.
