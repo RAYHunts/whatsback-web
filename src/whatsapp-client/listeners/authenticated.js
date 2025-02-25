@@ -12,27 +12,27 @@ const getGroups = require("../get-groups");
  * @returns {Promise<void>}
  */
 module.exports = async function authenticatedHandler(
-  client,
-  connectedSockets,
-  state
+    client,
+    connectedSockets,
+    state
 ) {
-  serverLog("WhatsApp client is authenticated");
-  state.isAuthenticated = true;
+    serverLog("WhatsApp client is authenticated");
+    state.isAuthenticated = true;
 
-  await sleep(2000);
+    await sleep(2000);
 
-  const info = await userInfo(client);
-  getContacts(client);
-  getGroups(client);
+    const info = await userInfo(client);
+    getContacts(client);
+    getGroups(client);
 
-  for (const socket of connectedSockets) {
-    socket.emit("authenticated", {
-      log: "WhatsApp is authenticated!",
-      user_info: {
-        name: info.name,
-        picture: info.picture,
-      },
-    });
-  }
+    for (const socket of connectedSockets) {
+        socket.emit("authenticated", {
+            log: "WhatsApp is authenticated!",
+            user_info: {
+                name: info.name,
+                picture: info.picture,
+            },
+        });
+    }
 };
 

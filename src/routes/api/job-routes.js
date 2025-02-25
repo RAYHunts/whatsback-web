@@ -1,12 +1,12 @@
 const express = require("express");
 const {
-  getJobs,
-  createJob,
-  findJobById,
-  findJobByStatus,
-  updateJob,
-  deleteJob,
-  forceDeleteJob,
+    getJobs,
+    createJob,
+    findJobById,
+    findJobByStatus,
+    updateJob,
+    deleteJob,
+    forceDeleteJob,
 } = require("../../controllers/api/job-controller");
 const router = express.Router();
 

@@ -2,38 +2,38 @@ const { Client, LocalAuth } = require("whatsapp-web.js");
 require("dotenv").config();
 
 let puppeteerOptions = {
-  headless: true,
-  args: [
-    "--disable-gpu",
-    "--disable-dev-shm-usage",
-    "--disable-setuid-sandbox",
-    "--no-first-run",
-    "--no-sandbox",
-    "--no-zygote",
-    "--deterministic-fetch",
-    "--disable-features=IsolateOrigins",
-    "--disable-site-isolation-trials"
-  ],
+    headless: true,
+    args: [
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--disable-setuid-sandbox",
+        "--no-first-run",
+        "--no-sandbox",
+        "--no-zygote",
+        "--deterministic-fetch",
+        "--disable-features=IsolateOrigins",
+        "--disable-site-isolation-trials"
+    ],
 };
 
 if (process.env.NODE_ENV === "production") {
-  puppeteerOptions = {
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-    headless: true,
-    args: [
-      "--disable-gpu",
-      "--disable-dev-shm-usage",
-      "--disable-setuid-sandbox",
-      "--no-first-run",
-      "--no-sandbox",
-      "--no-zygote",
-      "--deterministic-fetch",
-      "--disable-features=IsolateOrigins",
-      "--disable-site-isolation-trials",
-      "--single-process",
-      "--user-data-dir=/home/appuser/.chromium"
-    ],
-  };
+    puppeteerOptions = {
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+        headless: true,
+        args: [
+            "--disable-gpu",
+            "--disable-dev-shm-usage",
+            "--disable-setuid-sandbox",
+            "--no-first-run",
+            "--no-sandbox",
+            "--no-zygote",
+            "--deterministic-fetch",
+            "--disable-features=IsolateOrigins",
+            "--disable-site-isolation-trials",
+            "--single-process",
+            "--user-data-dir=/home/appuser/.chromium"
+        ],
+    };
 }
 
 /**
@@ -41,11 +41,11 @@ if (process.env.NODE_ENV === "production") {
  * @type {Client}
  */
 const client = new Client({
-  authStrategy: new LocalAuth(),
-  restartOnAuthFail: true,
-  takeoverOnConflict: true,
-  puppeteer: puppeteerOptions,
-  qrMaxRetries: 10,
+    authStrategy: new LocalAuth(),
+    restartOnAuthFail: true,
+    takeoverOnConflict: true,
+    puppeteer: puppeteerOptions,
+    qrMaxRetries: 10,
 });
 
 /**
@@ -80,7 +80,7 @@ client.initialize();
  * @returns {void}
  */
 const setSocketManager = (sockets) => {
-  connectedSockets = sockets;
+    connectedSockets = sockets;
 };
 
 /**

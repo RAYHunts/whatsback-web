@@ -68,7 +68,7 @@ app.use("/commands", commandFrontRoutes);
 app.use("/contacts", contactFrontRoutes);
 app.use("/message", messageFrontRoutes);
 app.get("/profile", (_, res) =>
-  res.render("profile", { title: "Profile", pathname: "profile" })
+    res.render("profile", { title: "Profile", pathname: "profile" })
 );
 
 // ===================================================
@@ -86,29 +86,31 @@ app.use("/api/jobs", jobRoutes);
 // Error Handlers
 // ===================================================
 app.use((_, res) => {
-  res.status(404).render("404", { title: "404 Not Found" });
+    res.status(404).render("404", { title: "404 Not Found" });
 });
+/* eslint-disable */
 app.use((error, _, res, __) => {
-  console.error("Unhandled error:", error);
-  res.status(500).json({ message: "Internal Server Error" });
+    console.error('Unhandled error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
 });
+/* eslint-enable */
 
 // ===================================================
 // HTTP & Socket Server Instance
 // ===================================================
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  cors: {
-    origin: parseOrigins(process.env.SOCKET_IO_CORS_ORIGIN),
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
+    cors: {
+        origin: parseOrigins(process.env.SOCKET_IO_CORS_ORIGIN),
+        methods: ["GET", "POST"],
+        credentials: true,
+    },
 });
 socketInstance.setIo(io);
 
 const connectedSockets = [];
 io.on("connection", async (socket) =>
-  socketOptions(socket, connectedSockets, client)
+    socketOptions(socket, connectedSockets, client)
 );
 setSocketManager(connectedSockets);
 
