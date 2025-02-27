@@ -28,24 +28,34 @@ Whatsback Provider is a simple WhatsApp provider that offers basic functionality
 - **List All Contacts:**  Retrieve and display a list of all contacts available on the WhatsApp account.
 - **Schedule Message:**  Schedule a message to be sent at a later time.
 
+---
+
+
+<h4 align="center">Leave Your Reviews & Start ⭐ This Repository</h4>
+<p align="center">
+    <a href="https://www.producthunt.com/posts/whatsback-web?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-whatsback&#0045;web" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=917168&theme=light&t=1740688609385" alt="Whatsback&#0032;Web - Host&#0032;Your&#0032;Own&#0032;Whatsapp&#0032;Provider&#0032;&#0045;&#0032;Free&#0032;and&#0032;Open&#0032;Source | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+</p>
+
+---
+
 ## Table of Contents
 
-- [⚠️ Caution](#️-caution)
-- [✨ Features](#-features)
-- [🚀 Getting Started](#-getting-started)
+- [⚠️ Caution](#caution)
+- [✨ Features](#features)
+- [🚀 Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Key Configuration Options](#key-configuration-options)
-- [🐳 Docker Installation](#-docker-installation)
+- [🐳 Docker Installation](#docker-installation)
   - [Docker CLI](#docker-cli)
   - [docker-compose.yml](#docker-composeyml)
-- [💻 Source Installation](#-source-installation)
-- [🏃 Running the Project](#-running-the-project)
-- [🔌 Available REST API](#-available-rest-api)
-- [🔒 Security Considerations](#-security-considerations)
-- [🤝 Contributing](#-contributing)
-- [💖 Donate or Sponsoring](#-donate-or-sponsoring)
-- [📢 Disclaimer](#-disclaimer)
-- [📄 License](#-license)
+- [💻 Source Installation](#source-installation)
+- [🏃 Running the Project](#running-the-project)
+- [🔌 Available REST API](#available-rest-api)
+- [🔒 Security Considerations](#security-considerations)
+- [🤝 Contributing](#contributing)
+- [💖 Donate or Sponsoring](#donate-or-sponsoring)
+- [📢 Disclaimer](#disclaimer)
+- [📄 License](#license)
 
 ## Getting Started
 
