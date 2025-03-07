@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/github/tag/darkterminal/whatsback-web" alt="Whatsback Web Tag" />
   <img src="https://img.shields.io/github/v/release/darkterminal/whatsback-web" alt="Whatsback Web Release" />
   <img src="https://img.shields.io/github/v/tag/darkterminal/whatsback-web?label=package" alt="Whatsback Web Package Registry" />
-  <img src="https://img.shields.io/github/downloads/darkterminal/whatsback-web/total" alt="Whatsback Web Downloads" />
+  <img src="https://ghcr-badge.egpl.dev/darkterminal/whatsback-web/size?color=%2344cc11&tag=latest&label=image+size" alt="Whatsback Web Image Size" />
   <a href="https://discord.gg/ZQPEtcWyBh">
     <img alt="Discord" src="https://img.shields.io/discord/1343952367615217764?style=flat&logo=discord&label=discord">
   </a>
