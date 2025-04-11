@@ -248,3 +248,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 <!-- GitAds-Verify: EW24FYC84IIZIJ3DV3UFDHDWUFLF7YTQ -->
+
+## GitAds Sponsored
+[![Sponsored by GitAds](https://gitads.dev/v1/ad-serve?source=tursodatabase/turso-driver-laravel@github)](https://gitads.dev/v1/ad-track?source=tursodatabase/turso-driver-laravel@github)
